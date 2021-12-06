@@ -1,6 +1,7 @@
 # Folders
 build/
 .idea/
+gbdk/
 
 # Prerequisites
 *.d
