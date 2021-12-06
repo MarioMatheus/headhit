@@ -1,7 +1,8 @@
 #include <gb/gb.h>
 #include <stdio.h>
+#include "oi_mundo.h"
 
 int main () {
-    printf("Hello World");
+    printf("%s\n", oi_mundo());
     return 1;
 }
