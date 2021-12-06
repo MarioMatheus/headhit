@@ -2,8 +2,8 @@ Rodando um hello world para Game Boy clássico usando
 [gbdk](https://github.com/gbdk-2020/gbdk-2020). Também um setup básico para testes unitários.
 
 <p align="center">
-    <a href="https://raw.githubusercontent.com/rafaellcoellho/template-c-gameboy/master/terminal.mp4">
-		<img alt="rodando no terminal" src="terminal.mp4" width="600px">
+    <a href="https://raw.githubusercontent.com/rafaellcoellho/template-c-gameboy/master/terminal.gif">
+		<img alt="rodando no terminal" src="terminal.gif" width="600px">
 	</a>
 </p>
 
