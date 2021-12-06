@@ -1,5 +1,5 @@
 Rodando um hello world para Game Boy clássico usando
-[gbdk](https://github.com/gbdk-2020/gbdk-2020). Também um setup básico para testes unitários.
+[gbdk](https://github.com/gbdk-2020/gbdk-2020).
 
 <p align="center">
     <a href="https://raw.githubusercontent.com/rafaellcoellho/template-c-gameboy/master/terminal.gif">
@@ -24,9 +24,3 @@ Baixar o gbdk:
 ```bash
 $ make baixar_gbdk
 ```
-
-## Estrutura
-
-- **build**: arquivos de compilação
-- **src**: código do jogo
-- **tests**: testes usando [CppUTest](https://github.com/cpputest/cpputest)
