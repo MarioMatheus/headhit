@@ -7,16 +7,6 @@ Rodando um hello world para Game Boy clássico usando
 	</a>
 </p>
 
-## Requisitos
-
-Uso o [sameboy](https://sameboy.github.io/) para emular o jogo em desenvolvimento.
-
-Após compilar corretamente o jogo, é possível rodar: 
-
-```bash
-$ make rodar_jogo
-```
-
 ## Setup
 
 Baixar o gbdk:
@@ -24,3 +14,14 @@ Baixar o gbdk:
 ```bash
 $ make baixar_gbdk
 ```
+
+## Requisitos
+
+Instalar [sameboy](https://sameboy.github.io/) para emular o jogo em desenvolvimento.
+
+Após compilar corretamente, é possível rodar: 
+
+```bash
+$ make rodar_jogo
+```
+
