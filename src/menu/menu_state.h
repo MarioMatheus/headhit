@@ -14,6 +14,7 @@ typedef struct {
     uint8_t chars[4];
 
     uint8_t previous_joypad;
+    uint8_t is_match_ready;
 } MenuState;
 
 void init_menu_state (MenuState* menu_state);

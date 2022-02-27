@@ -242,16 +242,16 @@ void init_menu_state (MenuState* menu_state) {
     menu_state->menu_index = MAIN_MENU_INDEX;
     menu_state->next_menu_index = MAIN_MENU_INDEX;
     menu_state->previous_menu_index = MATCH_MENU_INDEX;
-
     menu_state->option_index = MATCH_MAIN_OPTION_INDEX;
 
-    menu_state->match_mode = 0;
+    menu_state->match_mode = MATCH_MODE_3_MIN;
     menu_state->chars[0] = 0;
     menu_state->chars[1] = 0;
     menu_state->chars[2] = 1;
     menu_state->chars[3] = 1;
 
     menu_state->previous_joypad = 0;
+    menu_state->is_match_ready = 0;
 
     set_option_selector_sprites_tiles();
     set_char_sprites(menu_state->chars);
@@ -285,12 +285,21 @@ void update_match_menu_state (MenuState* menu_state, uint8_t current_joypad) {
         play_click_sound();
     }
 
-    if (current_joypad & J_A && !(menu_state->previous_joypad & J_A) && menu_state->option_index == MATCH_MODE_OPTION_INDEX) {
-        menu_state->match_mode = menu_state->match_mode + 1;
-        if (menu_state->match_mode == 4) {
-            menu_state->match_mode = 0;
+    if (current_joypad & J_A && !(menu_state->previous_joypad & J_A)) {
+        if (menu_state->option_index == MATCH_MODE_OPTION_INDEX) {
+
+            menu_state->match_mode = menu_state->match_mode + 1;
+            if (menu_state->match_mode == 4) {
+                menu_state->match_mode = 0;
+            }
+            set_match_mode_sprites(menu_state->match_mode);
         }
-        set_match_mode_sprites(menu_state->match_mode);
+        if (menu_state->option_index == PLAY_OPTION_INDEX) {
+            hide_char_sprites();
+            hide_match_mode_sprites();
+            move_option_selector(0, 0, 0);
+            menu_state->is_match_ready = 1;
+        }
         play_click_sound();
     }
 
