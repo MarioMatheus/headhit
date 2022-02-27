@@ -10,7 +10,7 @@ baixar_gbdk:
 	rm gbdk-linux64.tar.gz
 
 rodar_jogo:
-	sameboy build/*.gb
+	make && sameboy build/*.gb
 
 clean:
 	make -f MakeGb.mk clean

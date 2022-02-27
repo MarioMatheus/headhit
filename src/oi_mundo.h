@@ -1,6 +1,0 @@
-#ifndef TEMPLATE_C_GAMEBOY_OI_MUNDO_H
-#define TEMPLATE_C_GAMEBOY_OI_MUNDO_H
-
-char *oi_mundo(void);
-
-#endif //TEMPLATE_C_GAMEBOY_OI_MUNDO_H
