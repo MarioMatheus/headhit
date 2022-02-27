@@ -3,7 +3,7 @@ ARQUIVO_GB=build/$(NOME_DO_JOGO).gb
 
 DIRETORIO_SOURCES=src
 DIRETORIO_OBJ=build
-MODULOS := vdata menu lib
+MODULOS := vdata menu lib match
 DIRETORIOS_MODULOS := $(patsubst %, $(DIRETORIO_OBJ)/%, $(MODULOS))
 
 # ARQUIVOS_C=$(wildcard $(DIRETORIO_SOURCES)/*.c)

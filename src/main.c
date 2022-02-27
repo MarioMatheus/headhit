@@ -2,10 +2,10 @@
 
 #include "vdata/background_tileset.h"
 #include "vdata/sprites_tileset.h"
-#include "menu/menu_state.h"
 #include "lib/sound.h"
 
-#include "vdata/game_match_tilemap.h"
+#include "menu/menu_state.h"
+#include "match/match_state.h"
 
 void main () {
     DISPLAY_ON;
@@ -20,7 +20,8 @@ void main () {
     MenuState menu_state;
     init_menu_state(&menu_state);
 
-    uint8_t tmp_flag = 0;
+    uint8_t in_match = 0;
+    MatchState match_state;
 
     while (1) {
         uint8_t current_joypad = joypad();
@@ -29,9 +30,9 @@ void main () {
             update_menu_state(&menu_state, current_joypad);
         }
 
-        if (menu_state.is_match_ready && !tmp_flag) {
-            set_bkg_tiles(0, 0, GameMatchTilemapWidth, GameMatchTilemapHeight, GameMatchTilemap);
-            tmp_flag = 1;
+        if (menu_state.is_match_ready && !in_match) {
+            init_match_state(&match_state, menu_state.match_mode);
+            in_match = 1;
         }
 
         wait_vbl_done();
