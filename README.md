@@ -1,27 +1,22 @@
-Rodando um hello world para Game Boy clássico usando
-[gbdk](https://github.com/gbdk-2020/gbdk-2020).
+# HeadHit
 
-<p align="center">
-    <a href="https://raw.githubusercontent.com/rafaellcoellho/template-c-gameboy/master/terminal.gif">
-		<img alt="rodando no terminal" src="terminal.gif" width="600px">
-	</a>
-</p>
+Head soccer game developed to classic Game Boy using [gbdk](https://github.com/gbdk-2020/gbdk-2020).
 
-## Setup
+## Template
+This project use template [template-c-gameboy](https://github.com/rafaellcoellho/template-c-gameboy).
 
-Baixar o gbdk:
+## Development
+
+Download gbdk:
 
 ```bash
 $ make baixar_gbdk
 ```
 
-## Requisitos
+Install [sameboy](https://sameboy.github.io/) to game emulation.
 
-Instalar [sameboy](https://sameboy.github.io/) para emular o jogo em desenvolvimento.
-
-Após compilar corretamente, é possível rodar: 
+Run: 
 
 ```bash
 $ make rodar_jogo
 ```
-
