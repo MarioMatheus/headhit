@@ -12,27 +12,33 @@ void main () {
     SHOW_BKG;
     SHOW_SPRITES;
 
-    set_bkg_data(0, 114, BackgroundTileset);
+    set_bkg_data(0, 116, BackgroundTileset);
     set_sprite_data(0, 36, SpritesTileset);
 
     enable_sound();
 
     MenuState menu_state;
-    init_menu_state(&menu_state);
+    // init_menu_state(&menu_state);
+    menu_state.is_match_ready = 1;
+    menu_state.match_mode = 0;
 
-    uint8_t in_match = 0;
+    uint8_t match_initialized = 0;
     MatchState match_state;
 
     while (1) {
         uint8_t current_joypad = joypad();
 
-        if (!menu_state.is_match_ready) {
-            update_menu_state(&menu_state, current_joypad);
+        // if (!menu_state.is_match_ready) {
+        //     update_menu_state(&menu_state, current_joypad);
+        // }
+
+        if (menu_state.is_match_ready && !match_initialized) {
+            init_match_state(&match_state, menu_state.match_mode);
+            match_initialized = 1;
         }
 
-        if (menu_state.is_match_ready && !in_match) {
-            init_match_state(&match_state, menu_state.match_mode);
-            in_match = 1;
+        if (menu_state.is_match_ready) {
+            update_match_state(&match_state, current_joypad);
         }
 
         wait_vbl_done();
