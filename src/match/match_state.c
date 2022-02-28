@@ -6,47 +6,97 @@
 #include "../lib/definitions.h"
 
 
+void set_score_sprite_data (void) {
+    set_sprite_tile(SCORE_GOAL_H_1_SPRITE_INDEX, 0);
+    set_sprite_tile(SCORE_GOAL_H_2_SPRITE_INDEX, 0);
+    set_sprite_tile(SCORE_GOAL_V_1_SPRITE_INDEX, 0);
+    set_sprite_tile(SCORE_GOAL_V_2_SPRITE_INDEX, 0);
+}
+
+void show_score (void) {
+    move_sprite(SCORE_GOAL_H_1_SPRITE_INDEX, SCORE_GOAL_H_1_SPRITE_X, SCORE_GOAL_SPRITE_Y);
+    move_sprite(SCORE_GOAL_V_1_SPRITE_INDEX, SCORE_GOAL_V_1_SPRITE_X, SCORE_GOAL_SPRITE_Y);
+}
+
+void hide_score (void) {
+    hide_sprite(SCORE_GOAL_H_1_SPRITE_INDEX);
+    hide_sprite(SCORE_GOAL_H_2_SPRITE_INDEX);
+    hide_sprite(SCORE_GOAL_V_1_SPRITE_INDEX);
+    hide_sprite(SCORE_GOAL_V_2_SPRITE_INDEX);
+}
+
+void set_time_sprite_data (void) {
+    set_sprite_tile(TIME_MIN_SPRITE_INDEX, 3);
+    set_sprite_tile(TIME_DIVIDER_SPRITE_INDEX, TIME_DIVIDER_SPRITE_TILESET_INDEX);
+    set_sprite_tile(TIME_SEC_1_SPRITE_INDEX, 0);
+    set_sprite_tile(TIME_SEC_2_SPRITE_INDEX, 0);
+}
+
+void show_time (void) {
+    move_sprite(TIME_MIN_SPRITE_INDEX, TIME_MIN_SPRITE_X, TIME_SPRITE_Y);
+    move_sprite(TIME_DIVIDER_SPRITE_INDEX, TIME_DIVIDER_SPRITE_X, TIME_SPRITE_Y);
+    move_sprite(TIME_SEC_1_SPRITE_INDEX, TIME_SEC_1_SPRITE_X, TIME_SPRITE_Y);
+    move_sprite(TIME_SEC_2_SPRITE_INDEX, TIME_SEC_2_SPRITE_X, TIME_SPRITE_Y);
+}
+
+void hide_time (void) {
+    hide_sprite(TIME_MIN_SPRITE_INDEX);
+    hide_sprite(TIME_DIVIDER_SPRITE_INDEX);
+    hide_sprite(TIME_SEC_1_SPRITE_INDEX);
+    hide_sprite(TIME_SEC_2_SPRITE_INDEX);
+}
+
+void set_goalposts_sprites_data (void) {
+    uint8_t tile_index = GOALPOST_SPRITE_TITESET_START_INDEX;
+
+    for (uint8_t i = 0; i < 8; i++) {
+        set_sprite_tile(GOALPOST_1_SPRITE_START_INDEX + i, tile_index);
+        set_sprite_tile(GOALPOST_2_SPRITE_START_INDEX + i, tile_index);
+        set_sprite_prop(GOALPOST_2_SPRITE_START_INDEX + i, S_FLIPX);
+        if (i != 1 && i != 5) {
+            tile_index = tile_index + 1;
+        }
+    }
+
+}
+
+void show_goalposts (void) {
+    uint8_t tile_x = GOALPOST_1_SPRITE_X;
+    uint8_t tile_x_2 = GOALPOST_2_SPRITE_X;
+
+    uint8_t tile_y = GOALPOST_SPRITE_Y;
+
+    for (uint8_t i = 0; i < 8; i++) {
+        move_sprite(GOALPOST_1_SPRITE_START_INDEX + i, tile_x, tile_y);
+        move_sprite(GOALPOST_2_SPRITE_START_INDEX + i, tile_x_2, tile_y);
+        tile_y = tile_y + 8;
+        if (i == 3) {
+            tile_x = GOALPOST_1_SPRITE_X - 8;
+            tile_x_2 = GOALPOST_2_SPRITE_X + 8;
+
+            tile_y = GOALPOST_SPRITE_Y;
+        }
+    }
+}
+
+void hide_goalposts (void) {
+    for (uint8_t i = 0; i < 8; i++) {
+        hide_sprite(GOALPOST_1_SPRITE_START_INDEX + i);
+        hide_sprite(GOALPOST_2_SPRITE_START_INDEX + i);
+    }
+}
+
 void fill_bigcastle_stadium (void) {
     set_bkg_tiles(0, 0, GameMatchTilemapWidth, GameMatchTilemapHeight, GameMatchTilemap);
 
-    // Score
-    set_sprite_tile(0, 0);
-    set_sprite_tile(1, 0);
-    set_sprite_tile(2, 0);
-    set_sprite_tile(3, 0);
+    set_score_sprite_data();
+    show_score();
 
-    move_sprite(0, 30, 24);
-    move_sprite(2, 42, 24);
+    set_time_sprite_data();
+    show_time();
 
-    // Time
-    set_sprite_tile(4, 3);
-    set_sprite_tile(5, 36);
-    set_sprite_tile(6, 0);
-    set_sprite_tile(7, 0);
-
-    move_sprite(4, 137, 24);
-    move_sprite(5, 142, 24);
-    move_sprite(6, 146, 24);
-    move_sprite(7, 152, 24);
-
-    // Goalposts
-    set_sprite_tile(8, 37);
-    set_sprite_tile(9, 38);
-    set_sprite_tile(10, 38);
-    set_sprite_tile(11, 39);
-    set_sprite_tile(12, 40);
-    set_sprite_tile(13, 41);
-    set_sprite_tile(14, 41);
-    set_sprite_tile(15, 42);
-
-    move_sprite(8, 13, 92);
-    move_sprite(9, 13, 100);
-    move_sprite(10, 13, 108);
-    move_sprite(11, 13, 116);
-    move_sprite(12, 5, 92);
-    move_sprite(13, 5, 100);
-    move_sprite(14, 5, 108);
-    move_sprite(15, 5, 116);
+    set_goalposts_sprites_data();
+    show_goalposts();
 }
 
 void init_match_state (MatchState* match_state, uint8_t match_mode) {
