@@ -5,9 +5,13 @@
 #include <time.h>
 #include <stdbool.h>
 
+#include "ball.h"
+
 typedef struct {
     bool match_started;
     uint8_t match_mode;
+
+    Ball ball;
 
     time_t time;
     time_t last_clock_time;
