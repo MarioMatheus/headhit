@@ -53,11 +53,13 @@ void hide_score (void) {
     hide_sprite(SCORE_GOAL_V_2_SPRITE_INDEX);
 }
 
-void set_time_sprite_data (void) {
-    set_sprite_tile(TIME_MIN_SPRITE_INDEX, 3);
+void set_time_sprite_data (time_t seconds) {
+    uint8_t sec = seconds % 60;
+
+    set_sprite_tile(TIME_MIN_SPRITE_INDEX, seconds / 60);
     set_sprite_tile(TIME_DIVIDER_SPRITE_INDEX, TIME_DIVIDER_SPRITE_TILESET_INDEX);
-    set_sprite_tile(TIME_SEC_1_SPRITE_INDEX, 0);
-    set_sprite_tile(TIME_SEC_2_SPRITE_INDEX, 0);
+    set_sprite_tile(TIME_SEC_1_SPRITE_INDEX, sec / 10);
+    set_sprite_tile(TIME_SEC_2_SPRITE_INDEX, sec % 10);
 }
 
 void show_time (void) {
@@ -120,7 +122,7 @@ void fill_bigcastle_stadium (void) {
     set_score_sprite_data(0, 0);
     show_score();
 
-    set_time_sprite_data();
+    set_time_sprite_data(250);
     show_time();
 
     set_goalposts_sprites_data();
