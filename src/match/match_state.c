@@ -168,7 +168,7 @@ void init_match_state (MatchState* match_state, uint8_t match_mode) {
     match_state->last_clock_time = 0;
 
     match_state->paused = FALSE;
-    match_state->previous_joypad = 0;
+    match_state->previous_joypad = J_A;
 
     fill_bigcastle_stadium(match_state);
 }
@@ -182,7 +182,7 @@ void update_match_state (MatchState* match_state, uint8_t current_joypad) {
         return;
     }
 
-    if (!match_state->match_started && current_joypad & 0xFF) {
+    if (!match_state->match_started && current_joypad & 0xFFU && match_state->previous_joypad == 0x00U) {
         match_state->match_started = TRUE;
     }
 
