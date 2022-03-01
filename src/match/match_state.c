@@ -6,16 +6,44 @@
 #include "../lib/definitions.h"
 
 
-void set_score_sprite_data (void) {
-    set_sprite_tile(SCORE_GOAL_H_1_SPRITE_INDEX, 0);
-    set_sprite_tile(SCORE_GOAL_H_2_SPRITE_INDEX, 0);
-    set_sprite_tile(SCORE_GOAL_V_1_SPRITE_INDEX, 0);
-    set_sprite_tile(SCORE_GOAL_V_2_SPRITE_INDEX, 0);
+void set_score_sprite_data (uint8_t home_score, uint8_t visitant_score) {
+    uint8_t h_score = home_score;
+    uint8_t v_score = visitant_score;
+
+    if (home_score > 99) {
+        h_score = 99;
+    }
+
+    if (visitant_score > 99) {
+        v_score = 99;
+    }
+
+    set_sprite_tile(SCORE_GOAL_H_1_SPRITE_INDEX, h_score % 10);
+    set_sprite_tile(SCORE_GOAL_H_2_SPRITE_INDEX, h_score / 10);
+
+    if (v_score < 10) {
+        set_sprite_tile(SCORE_GOAL_V_1_SPRITE_INDEX, v_score);
+        set_sprite_tile(SCORE_GOAL_V_2_SPRITE_INDEX, 0);
+    } else {
+        set_sprite_tile(SCORE_GOAL_V_1_SPRITE_INDEX, v_score / 10);
+        set_sprite_tile(SCORE_GOAL_V_2_SPRITE_INDEX, v_score % 10);
+    }
 }
 
 void show_score (void) {
     move_sprite(SCORE_GOAL_H_1_SPRITE_INDEX, SCORE_GOAL_H_1_SPRITE_X, SCORE_GOAL_SPRITE_Y);
     move_sprite(SCORE_GOAL_V_1_SPRITE_INDEX, SCORE_GOAL_V_1_SPRITE_X, SCORE_GOAL_SPRITE_Y);
+
+    hide_sprite(SCORE_GOAL_H_2_SPRITE_INDEX);
+    hide_sprite(SCORE_GOAL_V_2_SPRITE_INDEX);
+
+    if (get_sprite_tile(SCORE_GOAL_H_2_SPRITE_INDEX) != 0) {
+        move_sprite(SCORE_GOAL_H_2_SPRITE_INDEX, SCORE_GOAL_H_2_SPRITE_X, SCORE_GOAL_SPRITE_Y);
+    }
+
+    if (get_sprite_tile(SCORE_GOAL_V_2_SPRITE_INDEX) != 0) {
+        move_sprite(SCORE_GOAL_V_2_SPRITE_INDEX, SCORE_GOAL_V_2_SPRITE_X, SCORE_GOAL_SPRITE_Y);
+    }
 }
 
 void hide_score (void) {
@@ -89,7 +117,7 @@ void hide_goalposts (void) {
 void fill_bigcastle_stadium (void) {
     set_bkg_tiles(0, 0, GameMatchTilemapWidth, GameMatchTilemapHeight, GameMatchTilemap);
 
-    set_score_sprite_data();
+    set_score_sprite_data(0, 0);
     show_score();
 
     set_time_sprite_data();
