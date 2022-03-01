@@ -1,4 +1,5 @@
 #include <gb/gb.h>
+#include <stdbool.h>
 
 #include "vdata/background_tileset.h"
 #include "vdata/sprites_tileset.h"
@@ -19,10 +20,10 @@ void main () {
 
     MenuState menu_state;
     // init_menu_state(&menu_state);
-    menu_state.is_match_ready = 1;
+    menu_state.is_match_ready = TRUE;
     menu_state.match_mode = 0;
 
-    uint8_t match_initialized = 0;
+    bool match_initialized = FALSE;
     MatchState match_state;
 
     while (1) {

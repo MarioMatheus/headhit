@@ -46,17 +46,17 @@ void move_option_selector (uint8_t anchor_x, uint8_t anchor_y, uint8_t heigth) {
     }
 }
 
-uint8_t handle_match_menu_char_selection (MenuState* menu_state, uint8_t current_joypad) {
+bool handle_match_menu_char_selection (MenuState* menu_state, uint8_t current_joypad) {
     uint8_t index = 0;
     uint8_t value = 0;
 
-    uint8_t has_changes = 0;
+    bool has_changes = FALSE;
 
     if (current_joypad & J_UP && !(menu_state->previous_joypad & J_UP)) {
         if (menu_state->option_index == CHAR_2_OPTION_INDEX) {
             index = 2;
         }
-        has_changes = 1;
+        has_changes = TRUE;
     }
 
     if (current_joypad & J_DOWN && !(menu_state->previous_joypad & J_DOWN)) {
@@ -64,10 +64,10 @@ uint8_t handle_match_menu_char_selection (MenuState* menu_state, uint8_t current
         if (menu_state->option_index == CHAR_2_OPTION_INDEX) {
             index = 3;
         }
-        has_changes = 1;
+        has_changes = TRUE;
     }
 
-    if (has_changes > 0) {
+    if (has_changes) {
         value = menu_state->chars[index] + 1;
         if (value == 4) {
             value = 0;
@@ -79,7 +79,7 @@ uint8_t handle_match_menu_char_selection (MenuState* menu_state, uint8_t current
     return has_changes;
 }
 
-uint8_t handle_match_menu_options_navigation (MenuState* menu_state, uint8_t current_joypad) {
+bool handle_match_menu_options_navigation (MenuState* menu_state, uint8_t current_joypad) {
     uint8_t previous_option_index = menu_state->option_index;
 
     if (current_joypad & J_RIGHT && !(menu_state->previous_joypad & J_RIGHT)) {
@@ -255,15 +255,15 @@ void update_match_menu_state (MenuState* menu_state, uint8_t current_joypad) {
 
 
     if (menu_state->option_index == CHAR_1_OPTION_INDEX || menu_state->option_index == CHAR_2_OPTION_INDEX) {
-        uint8_t has_changes = handle_match_menu_char_selection(menu_state, current_joypad);
-        if (has_changes > 0) {
+        bool has_changes = handle_match_menu_char_selection(menu_state, current_joypad);
+        if (has_changes) {
             set_char_sprites(menu_state->chars);
             play_jump_sound();
         }
     }
 
-    uint8_t has_changes = handle_match_menu_options_navigation(menu_state, current_joypad);
-    if (has_changes > 0) {
+    bool has_changes = handle_match_menu_options_navigation(menu_state, current_joypad);
+    if (has_changes) {
         uint8_t* params = get_selector_params_from_match_menu_option(menu_state->option_index);
         move_option_selector(params[0], params[1], params[2]);
     }
