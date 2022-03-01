@@ -2,11 +2,17 @@
 #define _MATCH_STATE_H_
 
 #include <gb/gb.h>
+#include <time.h>
+#include <stdbool.h>
 
 typedef struct {
+    bool match_started;
     uint8_t match_mode;
 
-    uint8_t paused;
+    time_t time;
+    time_t last_clock_time;
+
+    bool paused;
     uint8_t previous_joypad;
 } MatchState;
 

@@ -65,8 +65,30 @@ void set_time_sprite_data (time_t seconds) {
 void show_time (void) {
     move_sprite(TIME_MIN_SPRITE_INDEX, TIME_MIN_SPRITE_X, TIME_SPRITE_Y);
     move_sprite(TIME_DIVIDER_SPRITE_INDEX, TIME_DIVIDER_SPRITE_X, TIME_SPRITE_Y);
-    move_sprite(TIME_SEC_1_SPRITE_INDEX, TIME_SEC_1_SPRITE_X, TIME_SPRITE_Y);
-    move_sprite(TIME_SEC_2_SPRITE_INDEX, TIME_SEC_2_SPRITE_X, TIME_SPRITE_Y);
+
+    if (get_sprite_tile(TIME_MIN_SPRITE_INDEX) != 9) {
+        move_sprite(TIME_MIN_SPRITE_INDEX, TIME_MIN_SPRITE_X, TIME_SPRITE_Y);
+        move_sprite(TIME_SEC_1_SPRITE_INDEX, TIME_SEC_1_SPRITE_X, TIME_SPRITE_Y);
+        move_sprite(TIME_SEC_2_SPRITE_INDEX, TIME_SEC_2_SPRITE_X, TIME_SPRITE_Y);
+    }
+}
+
+void handle_match_time (MatchState* match_state) {
+    if (!match_state->match_started
+        || match_state->time == 0
+        || match_state->match_mode == MATCH_MODE_3_GOALS 
+        || match_state->match_mode == MATCH_MODE_7_GOALS) {
+        return;
+    }
+
+    time_t current_clock_time = time(NULL);
+
+    if (current_clock_time != match_state->last_clock_time) {
+        match_state->time = match_state->time - 1;
+        set_time_sprite_data(match_state->time);
+    }
+
+    match_state->last_clock_time = current_clock_time;
 }
 
 void hide_time (void) {
@@ -116,13 +138,13 @@ void hide_goalposts (void) {
     }
 }
 
-void fill_bigcastle_stadium (void) {
+void fill_bigcastle_stadium (MatchState* match_state) {
     set_bkg_tiles(0, 0, GameMatchTilemapWidth, GameMatchTilemapHeight, GameMatchTilemap);
 
     set_score_sprite_data(0, 0);
     show_score();
 
-    set_time_sprite_data(250);
+    set_time_sprite_data(match_state->time);
     show_time();
 
     set_goalposts_sprites_data();
@@ -130,12 +152,25 @@ void fill_bigcastle_stadium (void) {
 }
 
 void init_match_state (MatchState* match_state, uint8_t match_mode) {
+    match_state->match_started = FALSE;
     match_state->match_mode = match_mode;
 
-    match_state->paused = 0;
+    match_state->time = 540;
+    if (match_mode == MATCH_MODE_3_MIN) {
+        match_state->time = 180;
+    }
+    if (match_mode == MATCH_MODE_5_MIN) {
+        match_state->time = 300;
+    }
+
+    time_t current_clock_time;
+    time(&current_clock_time);
+    match_state->last_clock_time = 0;
+
+    match_state->paused = FALSE;
     match_state->previous_joypad = 0;
 
-    fill_bigcastle_stadium();
+    fill_bigcastle_stadium(match_state);
 }
 
 void update_match_state (MatchState* match_state, uint8_t current_joypad) {
@@ -146,6 +181,12 @@ void update_match_state (MatchState* match_state, uint8_t current_joypad) {
     if (match_state->paused) {
         return;
     }
+
+    if (!match_state->match_started && current_joypad & 0xFF) {
+        match_state->match_started = TRUE;
+    }
+
+    handle_match_time(match_state);
 
     match_state->previous_joypad = current_joypad;
 }
