@@ -7,7 +7,7 @@ void set_ball_sprite_data (void) {
 }
 
 void move_ball (Ball* ball) {
-    move_sprite(BALL_SPRITE_INDEX, ball->x, ball->y);
+    move_sprite(BALL_SPRITE_INDEX, ball->x.b.h, ball->y.b.h);
 }
 
 void hide_ball () {
@@ -15,23 +15,41 @@ void hide_ball () {
 }
 
 void center_the_ball (Ball* ball) {
-    ball->x = 84;
-    ball->y = 88;
+    ball->x.w = 84 << 8;
+    ball->y.w = 80 << 8;
 
-    ball->gravity = -1;
-    ball->x_speed = 1;
-    ball->y_speed = 1;
+    ball->gravity = 8;
+    ball->x_speed = 0;
+    ball->y_speed = 0;
 
-    ball->energy_loss = 1;
+    ball->energy_loss = 9;
     ball->friction = 1;
 
     ball->stadium_width = 160;
-    ball->stadium_height = 144;
+    ball->stadium_height = BALL_SPRITE_MIN_Y;
 
     set_ball_sprite_data();
     move_ball(ball);
 }
 
 void roll_the_ball (Ball* ball) {
+    ball->y.w += ball->y_speed;
+
+    if (ball->y_speed != 0 || ball->y.h != ball->stadium_height) {
+        ball->y_speed += ball->gravity;
+    }
+
+    if (ball->y.h > ball->stadium_height) {
+        ball->y_speed -= ball->gravity;
+
+        uint16_t y_speed_reduced = ball->y_speed / 10 * ball->energy_loss;
+        if (y_speed_reduced < 82) {
+            ball->y_speed = 0;
+            ball->y.h = ball->stadium_height;
+        } else {
+            ball->y_speed = -y_speed_reduced;
+        }
+    }
+
     move_ball(ball);
 }

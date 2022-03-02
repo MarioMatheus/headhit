@@ -4,15 +4,15 @@
 #include <gb/gb.h>
 
 typedef struct {
-    uint8_t x;
-    uint8_t y;
+    fixed x;
+    fixed y;
 
-    int8_t gravity;
-    int8_t x_speed;
-    int8_t y_speed;
+    uint16_t gravity;
+    uint16_t x_speed;
+    uint16_t y_speed;
 
-    int8_t energy_loss;
-    int8_t friction;
+    uint16_t energy_loss;
+    uint16_t friction;
 
     uint8_t stadium_width;
     uint8_t stadium_height;
