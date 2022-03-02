@@ -13,9 +13,9 @@ typedef struct {
     uint16_t y_speed;
 
     bool is_falling;
+    bool is_to_right;
 
     uint16_t energy_loss;
-    uint16_t friction;
 
     uint8_t stadium_width;
     uint8_t stadium_height;
