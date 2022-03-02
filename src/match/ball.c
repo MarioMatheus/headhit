@@ -43,7 +43,11 @@ void roll_the_ball (Ball* ball) {
         ball->y_speed -= ball->gravity;
 
         uint16_t y_speed_reduced = ball->y_speed / 10 * ball->energy_loss;
-        if (y_speed_reduced < 82) {
+
+        fixed next_y;
+        next_y.w = ball->y.w - y_speed_reduced;
+
+        if (next_y.b.h > ball->stadium_height) {
             ball->y_speed = 0;
             ball->y.h = ball->stadium_height;
         } else {
