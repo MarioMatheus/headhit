@@ -2,6 +2,7 @@
 #define _BALL_H_
 
 #include <gb/gb.h>
+#include <stdbool.h>
 
 typedef struct {
     fixed x;
@@ -10,6 +11,8 @@ typedef struct {
     uint16_t gravity;
     uint16_t x_speed;
     uint16_t y_speed;
+
+    bool is_falling;
 
     uint16_t energy_loss;
     uint16_t friction;
