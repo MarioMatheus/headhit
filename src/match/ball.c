@@ -12,7 +12,7 @@ void set_ball_sprite_data (uint8_t sprite_offset) {
     }
 }
 
-void move_ball (Ball* ball) {
+void move_ball_sprite (Ball* ball) {
     move_sprite(BALL_SPRITE_INDEX, ball->x.b.h, ball->y.b.h);
 }
 
@@ -20,7 +20,7 @@ void hide_ball () {
     hide_sprite(BALL_SPRITE_INDEX);
 }
 
-void animate_sprite(Ball* ball) {
+void animate_sprite (Ball* ball) {
     if (ball->x_speed > 0 && ball->relative_frame % ball->rotation_divisor == 0) {
         uint8_t sprite_index = get_sprite_tile(BALL_SPRITE_INDEX) - BALL_SPRITE_TITESET_START_INDEX;
         if (ball->is_to_right) {
@@ -36,6 +36,83 @@ void animate_sprite(Ball* ball) {
             }
         }
         set_ball_sprite_data(sprite_index);
+    }
+}
+
+void move_ball_on_the_x_axis (Ball* ball) {
+    if (ball->is_to_right) {
+        ball->x.w += ball->x_speed;
+    } else {
+        if (ball->x.w > ball->x_speed) {
+            ball->x.w -= ball->x_speed;
+        } else {
+            ball->x.w = 0;
+        }
+    }
+}
+
+void move_ball_on_the_y_axis (Ball* ball) {
+    if (ball->is_falling) {
+        ball->y.w += ball->y_speed;
+    } else {
+        ball->y.w -= ball->y_speed;
+    }
+}
+
+void apply_gravity (Ball* ball) {
+    if (ball->is_falling) {
+        ball->y_speed += ball->gravity;
+    } else {
+        ball->y_speed -= ball->gravity;
+    }
+
+    if (!ball->is_falling && ball->gravity >= ball->y_speed) {
+        ball->is_falling = TRUE;
+    }
+}
+
+void decrease_energy_on_the_y_axis (Ball* ball) {
+    uint16_t y_speed_reduced = ball->y_speed / 10 * ball->energy_loss;
+    fixed next_y;
+    next_y.w = ball->y.w - y_speed_reduced;
+    if (y_speed_reduced < 10) {
+        ball->y_speed = 0;
+        ball->y.h = ball->stadium_height;
+    } else {
+        ball->y_speed = y_speed_reduced;
+    }
+
+    ball->is_falling = FALSE;
+}
+
+void decrease_energy_on_the_x_axis (Ball* ball) {
+    uint16_t x_speed_reduced = ball->x_speed / 10 * ball->energy_loss;
+    fixed next_x;
+    next_x.w = ball->x.w - x_speed_reduced;
+    if (x_speed_reduced < 10) {
+        ball->x_speed = 0;
+        // ball->x.h = ball->stadium_height;
+    } else {
+        ball->x_speed = x_speed_reduced;
+    }
+}
+
+void increase_rotation_speed (Ball* ball) {
+    if (ball->rotation_divisor > 5) {
+        ball->rotation_divisor /= 2;
+    }
+}
+
+void decrease_rotation_speed (Ball* ball) {
+    if (ball->rotation_divisor < 20) {
+        ball->rotation_divisor *= 2;
+    }
+}
+
+void increase_relative_frame (Ball* ball) {
+    ball->relative_frame++;
+    if (ball->relative_frame == 60) {
+        ball->relative_frame = 0;
     }
 }
 
@@ -55,76 +132,29 @@ void center_the_ball (Ball* ball) {
 
     ball->energy_loss = 8;
 
-    ball->stadium_width = 160;
+    ball->stadium_width = BALL_SPRITE_MAX_X;
     ball->stadium_height = BALL_SPRITE_MIN_Y;
 
     set_ball_sprite_data(0);
-    move_ball(ball);
+    move_ball_sprite(ball);
 }
 
 void roll_the_ball (Ball* ball) {
-    if (ball->is_to_right) {
-        ball->x.w += ball->x_speed;
-    } else {
-        if (ball->x.w > ball->x_speed) {
-            ball->x.w -= ball->x_speed;
-        } else {
-            ball->x.w = 0;
-        }
-    }
-
-    if (ball->is_falling) {
-        ball->y.w += ball->y_speed;
-    } else {
-        ball->y.w -= ball->y_speed;
-    }
+    move_ball_on_the_x_axis(ball);
+    move_ball_on_the_y_axis(ball);
 
     if (ball->y_speed != 0 || ball->y.h != ball->stadium_height) {
-
-        if (ball->is_falling) {
-            ball->y_speed += ball->gravity;
-        } else {
-            ball->y_speed -= ball->gravity;
-        }
-
-        if (!ball->is_falling && ball->gravity >= ball->y_speed) {
-            ball->is_falling = TRUE;
-        }
+        apply_gravity(ball);
     }
-
 
     if (ball->y.h > ball->stadium_height) {
         ball->y_speed -= ball->gravity;
-
-        // Energy loss at y axis
-        uint16_t y_speed_reduced = ball->y_speed / 10 * ball->energy_loss;
-        fixed next_y;
-        next_y.w = ball->y.w - y_speed_reduced;
-        if (y_speed_reduced < 10) {
-            ball->y_speed = 0;
-            ball->y.h = ball->stadium_height;
-        } else {
-            ball->y_speed = y_speed_reduced;
-        }
-
-        ball->is_falling = FALSE;
+        decrease_energy_on_the_y_axis(ball);
     }
 
     if (ball->y.h == ball->stadium_height) {
-        // Energy loss at x axis
-        uint16_t x_speed_reduced = ball->x_speed / 10 * ball->energy_loss;
-        fixed next_x;
-        next_x.w = ball->x.w - x_speed_reduced;
-        if (x_speed_reduced < 10) {
-            ball->x_speed = 0;
-            // ball->x.h = ball->stadium_height;
-        } else {
-            ball->x_speed = x_speed_reduced;
-        }
-
-        if (ball->rotation_divisor < 20) {
-            ball->rotation_divisor *= 2;
-        }
+        decrease_energy_on_the_x_axis(ball);
+        decrease_rotation_speed(ball);
     }
 
     if (ball->x.h == 0) {
@@ -136,10 +166,6 @@ void roll_the_ball (Ball* ball) {
     }
 
     animate_sprite(ball);
-    move_ball(ball);
-
-    ball->relative_frame++;
-    if (ball->relative_frame == 60) {
-        ball->relative_frame = 0;
-    }
+    move_ball_sprite(ball);
+    increase_relative_frame(ball);
 }
