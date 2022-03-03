@@ -12,6 +12,9 @@ typedef struct {
     uint16_t x_speed;
     uint16_t y_speed;
 
+    uint8_t relative_frame;
+    uint8_t rotation_divisor;
+
     bool is_falling;
     bool is_to_right;
 
