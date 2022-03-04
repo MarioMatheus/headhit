@@ -1,5 +1,7 @@
 #include "match_state.h"
 
+#include <stdio.h>
+
 #include "../vdata/game_match_tilemap.h"
 
 #include "../lib/sound.h"
@@ -183,6 +185,7 @@ void update_match_state (MatchState* match_state, uint8_t current_joypad) {
     }
 
     if (match_state->paused) {
+        match_state->previous_joypad = current_joypad;
         return;
     }
 
