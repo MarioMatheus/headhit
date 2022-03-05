@@ -2,6 +2,8 @@
 
 #include "../lib/definitions.h"
 
+#include <stdio.h>
+
 
 void set_player_sprite_data (uint8_t char_sprite) {
     
@@ -33,17 +35,38 @@ void hide_player () {
     hide_sprite(PLAYER_SPRITE_INDEX);
 }
 
+void move_player_on_the_y_axis (Player* player) {
+    if (player->is_falling) {
+        player->y.w += player->y_speed;
+    } else {
+        player->y.w -= player->y_speed;
+    }
+}
+
+void apply_gravity_in_player (Player* player) {
+    if (player->is_falling) {
+        player->y_speed += player->gravity;
+    } else {
+        player->y_speed -= player->gravity;
+    }
+
+    if (!player->is_falling && player->gravity >= player->y_speed) {
+        player->is_falling = TRUE;
+    }
+}
+
 void put_player_on_the_green_carpet (Player* player, uint8_t char_sprite) {
     player->char_sprite = char_sprite;
 
     player->x.w = 56 << 8;
     player->y.w = PLAYER_SPRITE_MIN_Y << 8;
 
-    player->gravity = 9;
+    player->gravity = 15;
     player->x_speed = 200;
     player->y_speed = 0;
 
-    player->is_falling = TRUE;
+    player->jump_force = 300;
+    player->is_falling = FALSE;
     player->movement = 0;
 
     player->stadium_width = PLAYER_SPRITE_MAX_X;
@@ -53,7 +76,21 @@ void put_player_on_the_green_carpet (Player* player, uint8_t char_sprite) {
     move_player_sprite(player);
 }
 
-void update_player_movement (Player* player, uint8_t current_joypad) {
+void update_player_movement (Player* player, uint8_t current_joypad, uint8_t previous_joypad) {
+    move_player_on_the_y_axis(player);
+
+    if (player->y.h == player->stadium_height && current_joypad & J_B && !(previous_joypad & J_B)) {
+        player->y_speed = player->jump_force;
+    }
+
+    if (player->y_speed != 0 || player->y.h < player->stadium_height) {
+        apply_gravity_in_player(player);
+        if (player->y.h > player->stadium_height) {
+            player->y.w = PLAYER_SPRITE_MIN_Y << 8;
+            player->is_falling = FALSE;
+            player->y_speed = 0;
+        }
+    }
 
     if (current_joypad & J_RIGHT) {
         player->movement = 1;

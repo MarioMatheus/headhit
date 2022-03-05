@@ -14,6 +14,7 @@ typedef struct {
     uint16_t x_speed;
     uint16_t y_speed;
 
+    uint16_t jump_force;
     bool is_falling;
     int8_t movement;
 
@@ -22,6 +23,6 @@ typedef struct {
 } Player;
 
 void put_player_on_the_green_carpet (Player* player, uint8_t char_sprite);
-void update_player_movement (Player* player, uint8_t current_joypad);
+void update_player_movement (Player* player, uint8_t current_joypad, uint8_t previous_joypad);
 
 #endif

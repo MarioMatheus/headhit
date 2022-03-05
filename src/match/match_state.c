@@ -200,7 +200,7 @@ void update_match_state (MatchState* match_state, uint8_t current_joypad) {
     if (match_state->match_started) {
         handle_match_time(match_state);
         roll_the_ball(&match_state->ball);
-        update_player_movement(&match_state->player, current_joypad);
+        update_player_movement(&match_state->player, current_joypad, match_state->previous_joypad);
     }
 
     match_state->previous_joypad = current_joypad;
