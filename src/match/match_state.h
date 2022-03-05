@@ -6,12 +6,14 @@
 #include <stdbool.h>
 
 #include "ball.h"
+#include "player.h"
 
 typedef struct {
     bool match_started;
     uint8_t match_mode;
 
     Ball ball;
+    Player player;
 
     time_t time;
     time_t last_clock_time;

@@ -161,6 +161,10 @@ void init_match_state (MatchState* match_state, uint8_t match_mode) {
     match_state->ball = ball;
     center_the_ball(&match_state->ball);
 
+    Player player;
+    match_state->player = player;
+    put_player_on_the_green_carpet(&match_state->player, 0x00);
+
     match_state->time = 540;
     if (match_mode == MATCH_MODE_3_MIN) {
         match_state->time = 180;
@@ -196,6 +200,7 @@ void update_match_state (MatchState* match_state, uint8_t current_joypad) {
     if (match_state->match_started) {
         handle_match_time(match_state);
         roll_the_ball(&match_state->ball);
+        update_player_movement(&match_state->player, current_joypad);
     }
 
     match_state->previous_joypad = current_joypad;
