@@ -181,6 +181,7 @@ void init_match_state (MatchState* match_state, uint8_t match_mode) {
     match_state->previous_joypad = J_A;
 
     fill_bigcastle_stadium(match_state);
+    set_stereo();
 }
 
 void update_match_state (MatchState* match_state, uint8_t current_joypad) {

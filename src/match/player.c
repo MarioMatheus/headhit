@@ -1,6 +1,7 @@
 #include "player.h"
 
 #include "../lib/definitions.h"
+#include "../lib/sound.h"
 
 #include <stdio.h>
 
@@ -81,6 +82,7 @@ void update_player_movement (Player* player, uint8_t current_joypad, uint8_t pre
 
     if (player->y.h == player->stadium_height && current_joypad & J_B && !(previous_joypad & J_B)) {
         player->y_speed = player->jump_force;
+        play_jump_sound(player->x.h < player->stadium_width / 2);
     }
 
     if (player->y_speed != 0 || player->y.h < player->stadium_height) {

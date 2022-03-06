@@ -1,6 +1,7 @@
 #include "ball.h"
 
 #include "../lib/definitions.h"
+#include "../lib/sound.h"
 
 void set_ball_sprite_data (uint8_t sprite_offset) {
     if (sprite_offset > 3) {
@@ -150,6 +151,7 @@ void roll_the_ball (Ball* ball) {
     if (ball->y.h > ball->stadium_height) {
         ball->y_speed -= ball->gravity;
         decrease_energy_on_the_y_axis(ball);
+        play_bounce_sound(ball->x.h < ball->stadium_width / 2);
     }
 
     if (ball->y.h == ball->stadium_height) {
@@ -159,10 +161,12 @@ void roll_the_ball (Ball* ball) {
 
     if (ball->x.h == 0) {
         ball->is_to_right = TRUE;
+        play_bounce_sound(ball->x.h < ball->stadium_width / 2);
     }
     
     if (ball->x.h > ball->stadium_width) {
         ball->is_to_right = FALSE;
+        play_bounce_sound(ball->x.h < ball->stadium_width / 2);
     }
 
     animate_sprite(ball);

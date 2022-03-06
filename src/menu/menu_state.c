@@ -206,6 +206,7 @@ void init_menu_state (MenuState* menu_state) {
     set_option_selector_sprites_tiles();
     set_char_sprites(menu_state->chars);
     set_match_mode_sprites(menu_state->match_mode);
+    set_mono();
 }
 
 void update_main_menu_state (MenuState* menu_state, uint8_t current_joypad) {
@@ -258,7 +259,7 @@ void update_match_menu_state (MenuState* menu_state, uint8_t current_joypad) {
         bool has_changes = handle_match_menu_char_selection(menu_state, current_joypad);
         if (has_changes) {
             set_char_sprites(menu_state->chars);
-            play_jump_sound();
+            play_jump_sound(0);
         }
     }
 
