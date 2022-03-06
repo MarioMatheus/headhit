@@ -102,7 +102,6 @@ void decrease_energy_on_the_x_axis (Ball* ball) {
 
 void apply_matada_no_peito (Ball* ball, Player* player) {
     if (ball->y.h - 4 > player->y.h - 12 && ball->y.h - 4 < player->y.h - 6) {
-        printf("matada");
         ball->energy_loss -= 2;
         decrease_energy_on_the_x_axis(ball);
         ball->energy_loss += 2;
