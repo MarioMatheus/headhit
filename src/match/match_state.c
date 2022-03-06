@@ -163,7 +163,7 @@ void init_match_state (MatchState* match_state, uint8_t match_mode) {
 
     Player player;
     match_state->player = player;
-    put_player_on_the_green_carpet(&match_state->player, 0x00);
+    put_player_on_the_green_carpet(&match_state->player, 0x03);
 
     match_state->time = 540;
     if (match_mode == MATCH_MODE_3_MIN) {
