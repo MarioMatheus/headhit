@@ -100,6 +100,45 @@ void decrease_energy_on_the_x_axis (Ball* ball) {
     }
 }
 
+void apply_matada_no_peito (Ball* ball, Player* player) {
+    if (ball->y.h - 4 > player->y.h - 12 && ball->y.h - 4 < player->y.h - 6) {
+        printf("matada");
+        ball->energy_loss -= 2;
+        decrease_energy_on_the_x_axis(ball);
+        ball->energy_loss += 2;
+    }
+}
+
+void apply_collision_ball_player_by_right (Ball* ball, Player* player) {
+    if (
+        ball->y.h > player->y.h - 12
+        && ball->y.h < player->y.h + 2
+        && ball->x.h < player->x.h + 7
+        && ball->x.h > player->x.h + 4
+    ) {
+        ball->is_to_right = TRUE;
+        play_bounce_sound(ball->x.h < ball->stadium_width / 2);
+        if (!(player->char_sprite & 0xF0) && player->movement < 0) {
+            apply_matada_no_peito(ball, player);
+        }
+    }
+}
+
+void apply_collision_ball_player_by_left (Ball* ball, Player* player) {
+    if (
+        ball->y.h > player->y.h - 12
+        && ball->y.h < player->y.h + 2
+        && ball->x.h + 8 > player->x.h + 1
+        && ball->x.h + 8 < player->x.h + 4
+    ) {
+        ball->is_to_right = FALSE;
+        play_bounce_sound(ball->x.h < ball->stadium_width / 2);
+        if (player->char_sprite & 0xF0 && player->movement > 0) {
+            apply_matada_no_peito(ball, player);
+        }
+    }
+}
+
 void increase_rotation_speed (Ball* ball) {
     if (ball->rotation_divisor > 5) {
         ball->rotation_divisor /= 2;
@@ -131,7 +170,7 @@ void center_the_ball (Ball* ball) {
     ball->rotation_divisor = 5;
 
     ball->is_falling = TRUE;
-    ball->is_to_right = FALSE;
+    ball->is_to_right = TRUE;
 
     ball->energy_loss = 8;
 
@@ -171,36 +210,8 @@ void roll_the_ball (Ball* ball) {
         play_bounce_sound(ball->x.h < ball->stadium_width / 2);
     }
 
-    // in_collision_with_player_by_right
-    if (
-        ball->y.h > ball->player->y.h - 12
-        && ball->y.h < ball->player->y.h + 2
-        && ball->x.h < ball->player->x.h + 7
-        && ball->x.h > ball->player->x.h + 4
-    ) {
-        ball->is_to_right = TRUE;
-        play_bounce_sound(ball->x.h < ball->stadium_width / 2);
-        // Matada no peito
-        if (ball->player->movement < 0
-            && ball->y.h - 4 > ball->player->y.h - 12
-            && ball->y.h - 4 < ball->player->y.h - 6) {
-
-            ball->energy_loss -= 2;
-            decrease_energy_on_the_x_axis(ball);
-            ball->energy_loss += 2;
-        }
-    }
-
-    // in_collision_with_player_by_left
-    if (
-        ball->y.h > ball->player->y.h - 12
-        && ball->y.h < ball->player->y.h + 2
-        && ball->x.h + 8 > ball->player->x.h + 1
-        && ball->x.h + 8 < ball->player->x.h + 4
-    ) {
-        ball->is_to_right = FALSE;
-        play_bounce_sound(ball->x.h < ball->stadium_width / 2);
-    }
+    apply_collision_ball_player_by_right(ball, ball->player);
+    apply_collision_ball_player_by_left(ball, ball->player);
 
     animate_sprite(ball);
     move_ball_sprite(ball);
