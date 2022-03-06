@@ -157,13 +157,14 @@ void init_match_state (MatchState* match_state, uint8_t match_mode) {
     match_state->match_started = FALSE;
     match_state->match_mode = match_mode;
 
-    Ball ball;
-    match_state->ball = ball;
-    center_the_ball(&match_state->ball);
-
     Player player;
     match_state->player = player;
     put_player_on_the_green_carpet(&match_state->player, 0x03);
+
+    Ball ball;
+    ball.player = &match_state->player;
+    match_state->ball = ball;
+    center_the_ball(&match_state->ball);
 
     match_state->time = 540;
     if (match_mode == MATCH_MODE_3_MIN) {

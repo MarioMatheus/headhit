@@ -4,6 +4,8 @@
 #include <gb/gb.h>
 #include <stdbool.h>
 
+#include "player.h"
+
 typedef struct {
     fixed x;
     fixed y;
@@ -22,6 +24,8 @@ typedef struct {
 
     uint8_t stadium_width;
     uint8_t stadium_height;
+
+    Player* player;
 } Ball;
 
 void center_the_ball (Ball* ball);

@@ -3,6 +3,8 @@
 #include "../lib/definitions.h"
 #include "../lib/sound.h"
 
+#include "stdio.h"
+
 void set_ball_sprite_data (uint8_t sprite_offset) {
     if (sprite_offset > 3) {
         set_sprite_tile(BALL_SPRITE_INDEX, BALL_SPRITE_TITESET_START_INDEX + sprite_offset - 4);
@@ -76,7 +78,7 @@ void decrease_energy_on_the_y_axis (Ball* ball) {
     uint16_t y_speed_reduced = ball->y_speed / 10 * ball->energy_loss;
     fixed next_y;
     next_y.w = ball->y.w - y_speed_reduced;
-    if (y_speed_reduced < 10) {
+    if (y_speed_reduced < 80) {
         ball->y_speed = 0;
         ball->y.h = ball->stadium_height;
     } else {
@@ -129,7 +131,7 @@ void center_the_ball (Ball* ball) {
     ball->rotation_divisor = 5;
 
     ball->is_falling = TRUE;
-    ball->is_to_right = TRUE;
+    ball->is_to_right = FALSE;
 
     ball->energy_loss = 8;
 
@@ -163,8 +165,39 @@ void roll_the_ball (Ball* ball) {
         ball->is_to_right = TRUE;
         play_bounce_sound(ball->x.h < ball->stadium_width / 2);
     }
-    
+
     if (ball->x.h > ball->stadium_width) {
+        ball->is_to_right = FALSE;
+        play_bounce_sound(ball->x.h < ball->stadium_width / 2);
+    }
+
+    // in_collision_with_player_by_right
+    if (
+        ball->y.h > ball->player->y.h - 12
+        && ball->y.h < ball->player->y.h + 2
+        && ball->x.h < ball->player->x.h + 7
+        && ball->x.h > ball->player->x.h + 4
+    ) {
+        ball->is_to_right = TRUE;
+        play_bounce_sound(ball->x.h < ball->stadium_width / 2);
+        // Matada no peito
+        if (ball->player->movement < 0
+            && ball->y.h - 4 > ball->player->y.h - 12
+            && ball->y.h - 4 < ball->player->y.h - 6) {
+
+            ball->energy_loss -= 2;
+            decrease_energy_on_the_x_axis(ball);
+            ball->energy_loss += 2;
+        }
+    }
+
+    // in_collision_with_player_by_left
+    if (
+        ball->y.h > ball->player->y.h - 12
+        && ball->y.h < ball->player->y.h + 2
+        && ball->x.h + 8 > ball->player->x.h + 1
+        && ball->x.h + 8 < ball->player->x.h + 4
+    ) {
         ball->is_to_right = FALSE;
         play_bounce_sound(ball->x.h < ball->stadium_width / 2);
     }
