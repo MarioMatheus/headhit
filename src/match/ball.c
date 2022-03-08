@@ -59,7 +59,7 @@ void move_ball_on_the_y_axis (Ball* ball) {
         ball->y.w += ball->y_speed;
     } else {
         ball->y.w -= ball->y_speed;
-        if (ball->y.w < 100) {
+        if (ball->y.h < 10) {
             ball->is_falling = TRUE;
         }
     }
@@ -141,6 +141,22 @@ void apply_collision_ball_player_by_left (Ball* ball, Player* player) {
     }
 }
 
+void manage_kick_event_from_player (Ball* ball, Player* player) {
+    if (player->j_a_tapped && ball->y.h > player->y.h - 6 && ball->y.h < player->y.h + 2) {
+        int8_t kick_force = ball->x.h - player->x.h - 8;
+
+        if (player->char_sprite & 0xF0) {
+            kick_force = player->x.h - ball->x.h - 8;
+        }
+
+        if (kick_force > -5 && kick_force < 2) {
+            ball->x_speed += PLAYER_KICK_FORCE_X / (kick_force + 5);
+            ball->y_speed += PLAYER_KICK_FORCE_Y / (kick_force + 5);
+            ball->is_to_right = !(player->char_sprite & 0xF0);
+        }
+    }
+}
+
 void increase_rotation_speed (Ball* ball) {
     if (ball->rotation_divisor > 5) {
         ball->rotation_divisor /= 2;
@@ -212,27 +228,7 @@ void roll_the_ball (Ball* ball) {
         play_bounce_sound(ball->x.h < ball->stadium_width / 2);
     }
 
-    if (ball->player->j_a_tapped) {
-
-        if (ball->player->char_sprite & 0xF0) {
-
-        } else {
-
-            int8_t kick_force = ball->x.h - ball->player->x.h - 8;
-            if (
-                ball->y.h > ball->player->y.h - 6
-                && ball->y.h < ball->player->y.h + 2
-                && kick_force > -5
-                && kick_force < 2
-            ) {
-                ball->x_speed += 800 / (kick_force + 5);
-                ball->y_speed += 1000 / (kick_force + 5);
-                ball->is_to_right = TRUE;
-            }
-
-        }
-
-    }
+    manage_kick_event_from_player(ball, ball->player);
 
     apply_collision_ball_player_by_right(ball, ball->player);
     apply_collision_ball_player_by_left(ball, ball->player);

@@ -16,7 +16,7 @@ void main () {
     set_bkg_data(0, 116, BackgroundTileset);
     set_sprite_data(0, 43, SpritesTileset);
 
-    enable_sound();
+    disable_sound();
 
     MenuState menu_state;
     // init_menu_state(&menu_state);
