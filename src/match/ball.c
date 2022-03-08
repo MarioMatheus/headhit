@@ -59,6 +59,9 @@ void move_ball_on_the_y_axis (Ball* ball) {
         ball->y.w += ball->y_speed;
     } else {
         ball->y.w -= ball->y_speed;
+        if (ball->y.w < 100) {
+            ball->is_falling = TRUE;
+        }
     }
 }
 
@@ -110,7 +113,7 @@ void apply_matada_no_peito (Ball* ball, Player* player) {
 
 void apply_collision_ball_player_by_right (Ball* ball, Player* player) {
     if (
-        ball->y.h > player->y.h - 12
+        ball->y.h > player->y.h - 16
         && ball->y.h < player->y.h + 2
         && ball->x.h < player->x.h + 7
         && ball->x.h > player->x.h + 4
@@ -125,7 +128,7 @@ void apply_collision_ball_player_by_right (Ball* ball, Player* player) {
 
 void apply_collision_ball_player_by_left (Ball* ball, Player* player) {
     if (
-        ball->y.h > player->y.h - 12
+        ball->y.h > player->y.h - 16
         && ball->y.h < player->y.h + 2
         && ball->x.h + 8 > player->x.h + 1
         && ball->x.h + 8 < player->x.h + 4
@@ -162,7 +165,7 @@ void center_the_ball (Ball* ball) {
     ball->y.w = 80 << 8;
 
     ball->gravity = 9;
-    ball->x_speed = 300;
+    ball->x_speed = 0;
     ball->y_speed = 0;
 
     ball->relative_frame = 0;
@@ -207,6 +210,28 @@ void roll_the_ball (Ball* ball) {
     if (ball->x.h > ball->stadium_width) {
         ball->is_to_right = FALSE;
         play_bounce_sound(ball->x.h < ball->stadium_width / 2);
+    }
+
+    if (ball->player->j_a_tapped) {
+
+        if (ball->player->char_sprite & 0xF0) {
+
+        } else {
+
+            int8_t kick_force = ball->x.h - ball->player->x.h - 8;
+            if (
+                ball->y.h > ball->player->y.h - 6
+                && ball->y.h < ball->player->y.h + 2
+                && kick_force > -5
+                && kick_force < 2
+            ) {
+                ball->x_speed += 800 / (kick_force + 5);
+                ball->y_speed += 1000 / (kick_force + 5);
+                ball->is_to_right = TRUE;
+            }
+
+        }
+
     }
 
     apply_collision_ball_player_by_right(ball, ball->player);

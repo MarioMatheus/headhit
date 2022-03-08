@@ -73,6 +73,9 @@ void put_player_on_the_green_carpet (Player* player, uint8_t char_sprite) {
     player->stadium_width = PLAYER_SPRITE_MAX_X;
     player->stadium_height = PLAYER_SPRITE_MIN_Y;
 
+    player->j_a_tapped = FALSE;
+    player->kick_cooldown = 0;
+
     set_player_sprite_data(player->char_sprite);
     move_player_sprite(player);
 }
@@ -83,6 +86,15 @@ void update_player_movement (Player* player, uint8_t current_joypad, uint8_t pre
     if (player->y.h == player->stadium_height && current_joypad & J_B && !(previous_joypad & J_B)) {
         player->y_speed = player->jump_force;
         play_jump_sound(player->x.h < player->stadium_width / 2);
+    }
+
+    player->j_a_tapped = FALSE;
+    if (player->kick_cooldown > 0) {
+        player->kick_cooldown--;
+    }
+    if (player->kick_cooldown == 0 && current_joypad & J_A && !(previous_joypad & J_A)) {
+        player->j_a_tapped = TRUE;
+        player->kick_cooldown = 60;
     }
 
     if (player->y_speed != 0 || player->y.h < player->stadium_height) {

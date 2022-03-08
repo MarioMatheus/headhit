@@ -20,6 +20,9 @@ typedef struct {
 
     uint8_t stadium_width;
     uint8_t stadium_height;
+
+    bool j_a_tapped;
+    uint8_t kick_cooldown;
 } Player;
 
 void put_player_on_the_green_carpet (Player* player, uint8_t char_sprite);
