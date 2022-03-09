@@ -141,6 +141,20 @@ void apply_collision_ball_player_by_left (Ball* ball, Player* player) {
     }
 }
 
+void apply_collision_ball_player_by_top (Ball* ball, Player* player) {
+    if (
+        ball->y.h > player->y.h - 16
+        && ball->y.h < player->y.h - 12
+        && ball->x.h + 4 > player->x.h + 1
+        && ball->x.h + 4 < player->x.h + 7
+    ) {
+        ball->is_falling = FALSE;
+        if (player->y_speed > 0 && !player->is_falling) {
+            ball->y_speed += 20;
+        }
+    }
+}
+
 void manage_kick_event_from_player (Ball* ball, Player* player) {
     if (player->j_a_tapped && ball->y.h > player->y.h - 6 && ball->y.h < player->y.h + 2) {
         int8_t kick_force = ball->x.h - player->x.h - 8;
@@ -232,6 +246,7 @@ void roll_the_ball (Ball* ball) {
 
     apply_collision_ball_player_by_right(ball, ball->player);
     apply_collision_ball_player_by_left(ball, ball->player);
+    apply_collision_ball_player_by_top(ball, ball->player);
 
     animate_sprite(ball);
     move_ball_sprite(ball);
