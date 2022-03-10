@@ -1,5 +1,7 @@
 #include "ball.h"
 
+#include "collision.h"
+
 #include "../lib/definitions.h"
 #include "../lib/sound.h"
 
@@ -103,54 +105,73 @@ void decrease_energy_on_the_x_axis (Ball* ball) {
     }
 }
 
-void apply_matada_no_peito (Ball* ball, Player* player) {
-    if (ball->y.h - 4 > player->y.h - 12 && ball->y.h - 4 < player->y.h - 6) {
-        ball->energy_loss -= 2;
-        decrease_energy_on_the_x_axis(ball);
-        ball->energy_loss += 2;
-    }
+void apply_chest_trap (Ball* ball) {
+    ball->energy_loss -= 4;
+    decrease_energy_on_the_x_axis(ball);
+    ball->energy_loss += 4;
 }
 
-void apply_collision_ball_player_by_right (Ball* ball, Player* player) {
-    if (
-        ball->y.h > player->y.h - 16
-        && ball->y.h < player->y.h + 2
-        && ball->x.h < player->x.h + 7
-        && ball->x.h > player->x.h + 4
-    ) {
-        ball->is_to_right = TRUE;
-        play_bounce_sound(ball->x.h < ball->stadium_width / 2);
-        if (!(player->char_sprite & 0xF0) && player->movement < 0) {
-            apply_matada_no_peito(ball, player);
+void apply_head_trap (Ball* ball) {
+    ball->energy_loss -= 2;
+    decrease_energy_on_the_x_axis(ball);
+    ball->energy_loss += 2;
+}
+
+/**
+ * Check a collision between ball and player
+ * @return -1: No collision
+ *          0: Foot collision
+ *          1: Chest collision
+ *          2: Head collision
+ */
+int8_t process_collision (Ball* ball, Player* player) {
+    uint8_t ball_rect[] = {ball->x.h, ball->y.h - 8, 8, 8};
+    uint8_t player_rect[] = {player->x.h + 1, player->y.h - 14, 6, 14};
+    if (check_rect_collision(ball_rect, player_rect)) {
+        if (ball->y.h > player->y.h - 6) {
+            return 0;
+        }
+        if (ball->y.h > player->y.h - 12) {
+            return 1;
+        }
+        return 2;
+    }
+    return -1;
+}
+
+void apply_collision_ball_player (Ball* ball, Player* player) {
+    int8_t collision = process_collision(ball, player);
+    if (collision < 0) {
+        return;
+    }
+    bool is_right_collision = ball->x.h > player->x.h;
+    if (collision < 2) {
+        ball->is_to_right = is_right_collision;
+        if (
+            collision == 1
+            && (
+                player->char_sprite & 0xF0 && player->movement > 0
+                || !(player->char_sprite & 0xF0) && player->movement < 0
+            )
+        ) {
+            apply_chest_trap(ball);
         }
     }
-}
-
-void apply_collision_ball_player_by_left (Ball* ball, Player* player) {
-    if (
-        ball->y.h > player->y.h - 16
-        && ball->y.h < player->y.h + 2
-        && ball->x.h + 8 > player->x.h + 1
-        && ball->x.h + 8 < player->x.h + 4
-    ) {
-        ball->is_to_right = FALSE;
-        play_bounce_sound(ball->x.h < ball->stadium_width / 2);
-        if (player->char_sprite & 0xF0 && player->movement > 0) {
-            apply_matada_no_peito(ball, player);
-        }
-    }
-}
-
-void apply_collision_ball_player_by_top (Ball* ball, Player* player) {
-    if (
-        ball->y.h > player->y.h - 16
-        && ball->y.h < player->y.h - 12
-        && ball->x.h + 4 > player->x.h + 1
-        && ball->x.h + 4 < player->x.h + 7
-    ) {
+    if (collision == 2) {
         ball->is_falling = FALSE;
         if (player->y_speed > 0 && !player->is_falling) {
             ball->y_speed += 20;
+        }
+        if (ball->x_speed == 0) {
+            ball->x_speed = 50;
+        }
+        if (is_right_collision && !ball->is_to_right) {
+            ball->is_to_right = TRUE;
+            apply_head_trap(ball);
+        }
+        if (!is_right_collision && ball->is_to_right) {
+            ball->is_to_right = FALSE;
+            apply_head_trap(ball);
         }
     }
 }
@@ -244,9 +265,7 @@ void roll_the_ball (Ball* ball) {
 
     manage_kick_event_from_player(ball, ball->player);
 
-    apply_collision_ball_player_by_right(ball, ball->player);
-    apply_collision_ball_player_by_left(ball, ball->player);
-    apply_collision_ball_player_by_top(ball, ball->player);
+    apply_collision_ball_player(ball, ball->player);
 
     animate_sprite(ball);
     move_ball_sprite(ball);
