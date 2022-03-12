@@ -5,6 +5,8 @@
 
 #include <stdio.h>
 
+int8_t kick_animation_x_offsets[] = {-1, 0, 1, 1, 1, 0, -1, 0};
+int8_t kick_animation_y_offsets[] = {0, 0, 0, -1, 0, 0, 0, 0};
 
 void set_player_sprite_data (uint8_t char_sprite) {
     
@@ -22,13 +24,28 @@ void move_player_sprite (Player* player) {
     uint8_t x_head = player->x.b.h;
     uint8_t y_head = player->y.b.h - 8;
 
+    uint8_t x_offset = 0;
+    uint8_t y_offset = 0;
+
+    if (player->kick_animation > 0) {
+        x_offset = kick_animation_x_offsets[player->kick_animation - 1];
+        y_offset = kick_animation_y_offsets[player->kick_animation - 1];
+
+        if (player->relative_frame % 2 == 0) {
+            player->kick_animation++;
+            if (player->kick_animation > 8) {
+                player->kick_animation = 0;
+            }
+        }
+    }
+
     if (player->movement != 0) {
         x_head += player->movement;
         y_head++;
     }
 
     move_sprite(PLAYER_SPRITE_INDEX + 1, x_head, y_head);
-    move_sprite(PLAYER_SPRITE_INDEX, player->x.b.h, player->y.b.h);
+    move_sprite(PLAYER_SPRITE_INDEX, player->x.b.h + x_offset, player->y.b.h + y_offset);
 }
 
 void hide_player () {
@@ -56,6 +73,13 @@ void apply_gravity_in_player (Player* player) {
     }
 }
 
+void increase_player_relative_frame (Player* player) {
+    player->relative_frame++;
+    if (player->relative_frame == 60) {
+        player->relative_frame = 0;
+    }
+}
+
 void put_player_on_the_green_carpet (Player* player, uint8_t char_sprite) {
     player->char_sprite = char_sprite;
 
@@ -75,8 +99,11 @@ void put_player_on_the_green_carpet (Player* player, uint8_t char_sprite) {
 
     player->j_a_tapped = FALSE;
     player->kick_cooldown = 0;
+    player->kick_animation = 0;
 
     player->in_collision_with_ball = FALSE;
+
+    player->relative_frame = 0;
 
     set_player_sprite_data(player->char_sprite);
     move_player_sprite(player);
@@ -85,20 +112,26 @@ void put_player_on_the_green_carpet (Player* player, uint8_t char_sprite) {
 void update_player_movement (Player* player, uint8_t current_joypad, uint8_t previous_joypad) {
     move_player_on_the_y_axis(player);
 
+    // Jump
     if (player->y.h == player->stadium_height && current_joypad & J_B && !(previous_joypad & J_B)) {
         player->y_speed = player->jump_force;
         play_jump_sound(player->x.h < player->stadium_width / 2);
     }
 
+    // Kick
     player->j_a_tapped = FALSE;
+
     if (player->kick_cooldown > 0) {
         player->kick_cooldown--;
     }
+
     if (player->kick_cooldown == 0 && current_joypad & J_A && !(previous_joypad & J_A)) {
         player->j_a_tapped = TRUE;
-        player->kick_cooldown = 60;
+        player->kick_cooldown = 30;
+        player->kick_animation = 1;
     }
 
+    // Gravity
     if (player->y_speed != 0 || player->y.h < player->stadium_height) {
         apply_gravity_in_player(player);
         if (player->y.h > player->stadium_height) {
@@ -108,6 +141,7 @@ void update_player_movement (Player* player, uint8_t current_joypad, uint8_t pre
         }
     }
 
+    // Movement
     if (current_joypad & J_RIGHT) {
         player->movement = 1;
         if (((player->x.w + player->x_speed) >> 8) > player->stadium_width) {
@@ -126,5 +160,7 @@ void update_player_movement (Player* player, uint8_t current_joypad, uint8_t pre
         player->movement = 0;
     }
 
+    // Procedures
     move_player_sprite(player);
+    increase_player_relative_frame(player);
 }
