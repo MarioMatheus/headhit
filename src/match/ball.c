@@ -191,7 +191,7 @@ void manage_kick_event_from_player (Ball* ball, Player* player) {
         }
 
         if (kick_force > -5 && kick_force < 2) {
-            ball->x_speed += PLAYER_KICK_FORCE_X / (kick_force + 5);
+            ball->x_speed += PLAYER_KICK_FORCE_X * (kick_force + 5);
             ball->y_speed += PLAYER_KICK_FORCE_Y / (kick_force + 5);
             ball->is_to_right = !(player->char_sprite & 0xF0);
         }
@@ -270,7 +270,6 @@ void roll_the_ball (Ball* ball) {
     }
 
     manage_kick_event_from_player(ball, ball->player);
-
     apply_collision_ball_player(ball, ball->player);
 
     animate_sprite(ball);
