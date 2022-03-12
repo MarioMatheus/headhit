@@ -23,6 +23,8 @@ typedef struct {
 
     bool j_a_tapped;
     uint8_t kick_cooldown;
+
+    bool in_collision_with_ball;
 } Player;
 
 void put_player_on_the_green_carpet (Player* player, uint8_t char_sprite);

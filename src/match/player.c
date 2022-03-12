@@ -76,6 +76,8 @@ void put_player_on_the_green_carpet (Player* player, uint8_t char_sprite) {
     player->j_a_tapped = FALSE;
     player->kick_cooldown = 0;
 
+    player->in_collision_with_ball = FALSE;
+
     set_player_sprite_data(player->char_sprite);
     move_player_sprite(player);
 }

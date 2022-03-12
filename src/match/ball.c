@@ -127,7 +127,10 @@ void apply_head_trap (Ball* ball) {
 int8_t process_collision (Ball* ball, Player* player) {
     uint8_t ball_rect[] = {ball->x.h, ball->y.h - 8, 8, 8};
     uint8_t player_rect[] = {player->x.h + 1, player->y.h - 14, 6, 14};
-    if (check_rect_collision(ball_rect, player_rect)) {
+
+    bool has_collision = check_rect_collision(ball_rect, player_rect);
+
+    if (!player->in_collision_with_ball && has_collision) {
         if (ball->y.h > player->y.h - 6) {
             return 0;
         }
@@ -136,6 +139,9 @@ int8_t process_collision (Ball* ball, Player* player) {
         }
         return 2;
     }
+
+    player->in_collision_with_ball = has_collision;
+
     return -1;
 }
 
