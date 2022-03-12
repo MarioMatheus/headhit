@@ -5,7 +5,36 @@
 #include "../lib/definitions.h"
 #include "../lib/sound.h"
 
-#include "stdio.h"
+
+void increase_ball_y_speed (Ball* ball, uint16_t speed) {
+    ball->y_speed += speed;
+    if (ball->y_speed > 2000) {
+        ball->y_speed = 2000;
+    }
+}
+
+void decrease_ball_y_speed (Ball* ball, uint16_t speed) {
+    if (ball->y_speed < speed) {
+        ball->y_speed = 0;
+    } else {
+        ball->y_speed -= speed;
+    }
+}
+
+void increase_ball_x_speed (Ball* ball, uint16_t speed) {
+    ball->x_speed += speed;
+    if (ball->x_speed > 2000) {
+        ball->x_speed = 2000;
+    }
+}
+
+void decrease_ball_x_speed (Ball* ball, uint16_t speed) {
+    if (ball->x_speed < speed) {
+        ball->x_speed = 0;
+    } else {
+        ball->x_speed -= speed;
+    }
+}
 
 void set_ball_sprite_data (uint8_t sprite_offset) {
     if (sprite_offset > 3) {
@@ -69,9 +98,9 @@ void move_ball_on_the_y_axis (Ball* ball) {
 
 void apply_gravity (Ball* ball) {
     if (ball->is_falling) {
-        ball->y_speed += ball->gravity;
+        increase_ball_y_speed(ball, ball->gravity);
     } else {
-        ball->y_speed -= ball->gravity;
+        decrease_ball_y_speed(ball, ball->gravity);
     }
 
     if (!ball->is_falling && ball->gravity >= ball->y_speed) {
@@ -166,7 +195,7 @@ void apply_collision_ball_player (Ball* ball, Player* player) {
     if (collision == 2) {
         ball->is_falling = FALSE;
         if (player->y_speed > 0 && !player->is_falling) {
-            ball->y_speed += 20;
+            increase_ball_y_speed(ball, 20);
         }
         if (ball->x_speed == 0) {
             ball->x_speed = 50;
@@ -191,8 +220,8 @@ void manage_kick_event_from_player (Ball* ball, Player* player) {
         }
 
         if (kick_force > -5 && kick_force < 2) {
-            ball->x_speed += PLAYER_KICK_FORCE_X * (kick_force + 5);
-            ball->y_speed += PLAYER_KICK_FORCE_Y / (kick_force + 5);
+            increase_ball_x_speed(ball, PLAYER_KICK_FORCE_X * (kick_force + 5));
+            increase_ball_y_speed(ball, PLAYER_KICK_FORCE_Y / (kick_force + 5));
             ball->is_to_right = !(player->char_sprite & 0xF0);
         }
     }
@@ -249,7 +278,7 @@ void roll_the_ball (Ball* ball) {
     }
 
     if (ball->y.h > ball->stadium_height) {
-        ball->y_speed -= ball->gravity;
+        decrease_ball_y_speed(ball, ball->gravity);
         decrease_energy_on_the_y_axis(ball);
         play_bounce_sound(ball->x.h < ball->stadium_width / 2);
     }
