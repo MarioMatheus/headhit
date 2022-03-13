@@ -126,7 +126,7 @@ void show_goalposts (void) {
         tile_y = tile_y + 8;
         if (i == 3) {
             tile_x = GOALPOST_1_SPRITE_X - 8;
-            tile_x_2 = GOALPOST_2_SPRITE_X + 8;
+            tile_x_2 = (uint8_t)(GOALPOST_2_SPRITE_X + 8);
 
             tile_y = GOALPOST_SPRITE_Y;
         }
@@ -153,13 +153,20 @@ void fill_bigcastle_stadium (MatchState* match_state) {
     show_goalposts();
 }
 
+void reinit_match (MatchState* match_state) {
+    put_player_on_the_green_carpet(&match_state->player, match_state->player.char_sprite, match_state->player.goals);
+    center_the_ball(&match_state->ball);
+    match_state->time_to_reinit = 255;
+    match_state->ball.goal_scored = FALSE;
+}
+
 void init_match_state (MatchState* match_state, uint8_t match_mode) {
     match_state->match_started = FALSE;
     match_state->match_mode = match_mode;
 
     Player player;
     match_state->player = player;
-    put_player_on_the_green_carpet(&match_state->player, 0x03);
+    put_player_on_the_green_carpet(&match_state->player, 0x03, 0);
 
     Ball ball;
     ball.player = &match_state->player;
@@ -181,6 +188,8 @@ void init_match_state (MatchState* match_state, uint8_t match_mode) {
     match_state->paused = FALSE;
     match_state->previous_joypad = J_A;
 
+    match_state->time_to_reinit = 255;
+
     fill_bigcastle_stadium(match_state);
     set_stereo();
 }
@@ -200,9 +209,20 @@ void update_match_state (MatchState* match_state, uint8_t current_joypad) {
     }
 
     if (match_state->match_started) {
-        handle_match_time(match_state);
         roll_the_ball(&match_state->ball);
-        update_player_movement(&match_state->player, current_joypad, match_state->previous_joypad);
+        if (match_state->ball.goal_scored) {
+            if (match_state->time_to_reinit == 255) {
+                set_score_sprite_data(match_state->player.goals, 0);
+            }
+            match_state->time_to_reinit--;
+            if (match_state->time_to_reinit == 0) {
+                reinit_match(match_state);
+                match_state->match_started = FALSE;
+            }
+        } else {
+            handle_match_time(match_state);
+            update_player_movement(&match_state->player, current_joypad, match_state->previous_joypad);
+        }
     }
 
     match_state->previous_joypad = current_joypad;

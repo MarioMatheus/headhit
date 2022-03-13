@@ -80,7 +80,13 @@ void increase_player_relative_frame (Player* player) {
     }
 }
 
-void put_player_on_the_green_carpet (Player* player, uint8_t char_sprite) {
+void add_score_to_player (Player* player) {
+    if (player->goals < 99) {
+        player->goals++;
+    }
+}
+
+void put_player_on_the_green_carpet (Player* player, uint8_t char_sprite, uint8_t goals) {
     player->char_sprite = char_sprite;
 
     player->x.w = 56 << 8;
@@ -104,6 +110,8 @@ void put_player_on_the_green_carpet (Player* player, uint8_t char_sprite) {
     player->in_collision_with_ball = FALSE;
 
     player->relative_frame = 0;
+
+    player->goals = goals;
 
     set_player_sprite_data(player->char_sprite);
     move_player_sprite(player);

@@ -28,6 +28,8 @@ typedef struct {
     uint8_t stadium_height;
 
     Player* player;
+
+    bool goal_scored;
 } Ball;
 
 void center_the_ball (Ball* ball);

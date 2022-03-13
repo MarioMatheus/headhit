@@ -149,6 +149,12 @@ void apply_head_trap (Ball* ball) {
     ball->energy_loss += 2;
 }
 
+void apply_goalpost_trap (Ball* ball) {
+    ball->energy_loss -= 5;
+    decrease_energy_on_the_x_axis(ball);
+    ball->energy_loss += 5;
+}
+
 /**
  * Check a collision between ball and player
  * @return -1: No collision
@@ -234,6 +240,33 @@ void manage_kick_event_from_player (Ball* ball, Player* player) {
     }
 }
 
+void manage_ball_at_goalposts (Ball* ball) {
+    if (
+        ball->is_falling
+        && (ball->x.h < GOALPOST_1_SPRITE_X + 8 || ball->x.h > GOALPOST_2_SPRITE_X - 8)
+        && ball->y.h > GOALPOST_SPRITE_Y - 12
+        && ball->y.h < GOALPOST_SPRITE_Y + 2
+    ) {
+        decrease_ball_y_speed(ball, ball->gravity);
+        ball->is_to_right = ball->x.h < GOALPOST_1_SPRITE_X + 8;
+        ball->is_falling = FALSE;
+        increase_ball_x_speed(ball, 20);
+    }
+
+    if (
+        !ball->goal_scored
+        && (ball->x.h < GOALPOST_1_SPRITE_X || ball->x.h > GOALPOST_2_SPRITE_X)
+        && ball->y.h > GOALPOST_SPRITE_Y + 2
+    ) {
+        decrease_ball_y_speed(ball, ball->gravity);
+        apply_goalpost_trap(ball);
+        ball->goal_scored = TRUE;
+        if (ball->x.h > GOALPOST_2_SPRITE_X - 8) {
+            add_score_to_player(ball->player);
+        }
+    }
+}
+
 void increase_rotation_speed (Ball* ball) {
     if (ball->rotation_divisor > 5) {
         ball->rotation_divisor /= 2;
@@ -274,6 +307,8 @@ void center_the_ball (Ball* ball) {
     ball->stadium_width = BALL_SPRITE_MAX_X;
     ball->stadium_height = BALL_SPRITE_MIN_Y;
 
+    ball->goal_scored = FALSE;
+
     set_ball_sprite_data(0);
     move_ball_sprite(ball);
 }
@@ -286,17 +321,7 @@ void roll_the_ball (Ball* ball) {
         apply_gravity(ball);
     }
 
-    if (
-        ball->is_falling
-        && (ball->x.h < GOALPOST_1_SPRITE_X + 8 || ball->x.h > GOALPOST_2_SPRITE_X - 8)
-        && ball->y.h > GOALPOST_SPRITE_Y - 12
-        && ball->y.h < GOALPOST_SPRITE_Y + 2
-    ) {
-        decrease_ball_y_speed(ball, ball->gravity);
-        ball->is_to_right = ball->x.h < GOALPOST_1_SPRITE_X + 8;
-        ball->is_falling = FALSE;
-        increase_ball_x_speed(ball, 20);
-    }
+    manage_ball_at_goalposts(ball);
 
     if (ball->y.h > ball->stadium_height) {
         decrease_ball_y_speed(ball, ball->gravity);
