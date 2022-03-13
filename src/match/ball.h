@@ -10,6 +10,8 @@ typedef struct {
     fixed x;
     fixed y;
 
+    fixed previous_y;
+
     uint16_t gravity;
     uint16_t x_speed;
     uint16_t y_speed;

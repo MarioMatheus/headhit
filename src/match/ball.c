@@ -5,11 +5,13 @@
 #include "../lib/definitions.h"
 #include "../lib/sound.h"
 
+#include <stdio.h>
+
 
 void increase_ball_y_speed (Ball* ball, uint16_t speed) {
     ball->y_speed += speed;
-    if (ball->y_speed > 2000) {
-        ball->y_speed = 2000;
+    if (ball->y_speed > 500) {
+        ball->y_speed = 500;
     }
 }
 
@@ -23,8 +25,8 @@ void decrease_ball_y_speed (Ball* ball, uint16_t speed) {
 
 void increase_ball_x_speed (Ball* ball, uint16_t speed) {
     ball->x_speed += speed;
-    if (ball->x_speed > 2000) {
-        ball->x_speed = 2000;
+    if (ball->x_speed > 500) {
+        ball->x_speed = 500;
     }
 }
 
@@ -86,6 +88,7 @@ void move_ball_on_the_x_axis (Ball* ball) {
 }
 
 void move_ball_on_the_y_axis (Ball* ball) {
+    ball->previous_y.w = ball->y.w;
     if (ball->is_falling) {
         ball->y.w += ball->y_speed;
     } else {
@@ -160,13 +163,17 @@ int8_t process_collision (Ball* ball, Player* player) {
     bool has_collision = check_rect_collision(ball_rect, player_rect);
 
     if (!player->in_collision_with_ball && has_collision) {
-        if (ball->y.h > player->y.h - 6) {
-            return 0;
+        if (ball->previous_y.h < player->y.h - 12) {
+            return 2;
         }
+        // if (ball->y.h > player->y.h - 6) {
+        //     return 0;
+        // }
         if (ball->y.h > player->y.h - 12) {
             return 1;
         }
-        return 2;
+        // return 2;
+        return 0;
     }
 
     player->in_collision_with_ball = has_collision;
@@ -250,6 +257,8 @@ void center_the_ball (Ball* ball) {
     ball->x.w = 84 << 8;
     ball->y.w = 80 << 8;
 
+    ball->previous_y.w = 0;
+
     ball->gravity = 9;
     ball->x_speed = 0;
     ball->y_speed = 0;
@@ -275,6 +284,18 @@ void roll_the_ball (Ball* ball) {
 
     if (ball->y_speed != 0 || ball->y.h != ball->stadium_height) {
         apply_gravity(ball);
+    }
+
+    if (
+        ball->is_falling
+        && (ball->x.h < GOALPOST_1_SPRITE_X + 8 || ball->x.h > GOALPOST_2_SPRITE_X - 8)
+        && ball->y.h > GOALPOST_SPRITE_Y - 12
+        && ball->y.h < GOALPOST_SPRITE_Y + 2
+    ) {
+        decrease_ball_y_speed(ball, ball->gravity);
+        ball->is_to_right = ball->x.h < GOALPOST_1_SPRITE_X + 8;
+        ball->is_falling = FALSE;
+        increase_ball_x_speed(ball, 20);
     }
 
     if (ball->y.h > ball->stadium_height) {
