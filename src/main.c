@@ -14,7 +14,7 @@ void main () {
     SHOW_SPRITES;
 
     set_bkg_data(0, 116, BackgroundTileset);
-    set_sprite_data(0, 43, SpritesTileset);
+    set_sprite_data(0, 50, SpritesTileset);
 
     disable_sound();
 

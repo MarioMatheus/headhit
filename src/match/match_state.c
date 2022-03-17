@@ -140,6 +140,24 @@ void hide_goalposts (void) {
     }
 }
 
+void set_goal_label (void) {
+    for (uint8_t i = 0; i < 4; i++) {
+        set_sprite_tile(LABEL_SPRITE_START_INDEX + i, GOAL_LABEL_SPRITE_TITESET_START_INDEX + i);
+    }
+}
+
+void show_goal_label (uint8_t time) {
+    for (uint8_t i = 0; i < 4; i++) {
+        move_sprite(LABEL_SPRITE_START_INDEX + i, 72 + 8 * i, 88 + (time % 12 == i));
+    }
+}
+
+void hide_label (void) {
+    for (uint8_t i = 0; i < 4; i++) {
+        hide_sprite(LABEL_SPRITE_START_INDEX + i);
+    }
+}
+
 void fill_bigcastle_stadium (MatchState* match_state) {
     set_bkg_tiles(0, 0, GameMatchTilemapWidth, GameMatchTilemapHeight, GameMatchTilemap);
 
@@ -213,9 +231,12 @@ void update_match_state (MatchState* match_state, uint8_t current_joypad) {
         if (match_state->ball.goal_scored) {
             if (match_state->time_to_reinit == 255) {
                 set_score_sprite_data(match_state->player.goals, 0);
+                set_goal_label();
             }
+            show_goal_label(match_state->time_to_reinit);
             match_state->time_to_reinit--;
             if (match_state->time_to_reinit == 0) {
+                hide_label();
                 reinit_match(match_state);
                 match_state->match_started = FALSE;
             }
