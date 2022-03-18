@@ -65,7 +65,6 @@ void set_time_sprite_data (time_t seconds) {
 }
 
 void show_time (void) {
-    move_sprite(TIME_MIN_SPRITE_INDEX, TIME_MIN_SPRITE_X, TIME_SPRITE_Y);
     move_sprite(TIME_DIVIDER_SPRITE_INDEX, TIME_DIVIDER_SPRITE_X, TIME_SPRITE_Y);
 
     if (get_sprite_tile(TIME_MIN_SPRITE_INDEX) != 9) {
@@ -88,6 +87,10 @@ void handle_match_time (MatchState* match_state) {
     if (current_clock_time != match_state->last_clock_time) {
         match_state->time = match_state->time - 1;
         set_time_sprite_data(match_state->time);
+    }
+
+    if (match_state->time == 0) {
+        match_state->is_match_ended = TRUE;
     }
 
     match_state->last_clock_time = current_clock_time;
@@ -183,11 +186,59 @@ void fill_bigcastle_stadium (MatchState* match_state) {
     show_goalposts();
 }
 
+bool check_if_match_ended_with_goals_scored (MatchState* match_state) {
+    if (match_state->match_mode == MATCH_MODE_3_GOALS) {
+        return match_state->player.goals == 3;
+    }
+    if (match_state->match_mode == MATCH_MODE_7_GOALS) {
+        return match_state->player.goals == 7;
+    }
+    return FALSE;
+}
+
 void reinit_match (MatchState* match_state) {
     put_player_on_the_green_carpet(&match_state->player, match_state->player.char_sprite, match_state->player.goals);
     center_the_ball(&match_state->ball);
     match_state->time_to_reinit = 255;
     match_state->ball.goal_scored = FALSE;
+}
+
+void end_match (MatchState* match_state) {
+    // TODO: return to menu
+    match_state->time = match_state->time;
+}
+
+void handle_goal_scored (MatchState* match_state) {
+    if (match_state->time_to_reinit == 255) {
+        set_score_sprite_data(match_state->player.goals, 0);
+        if (match_state->player.goals == 10) {
+            show_score();
+        }
+        set_goal_label();
+    }
+    show_goal_label(match_state->time_to_reinit);
+    match_state->time_to_reinit--;
+    if (match_state->time_to_reinit == 0) {
+        hide_label();
+        if (check_if_match_ended_with_goals_scored(match_state)) {
+            match_state->time_to_reinit == 255;
+            match_state->is_match_ended = TRUE;
+        } else {
+            reinit_match(match_state);
+            match_state->match_started = FALSE;
+        }
+    }
+}
+
+void handle_match_end (MatchState* match_state) {
+    if (match_state->time_to_reinit == 255) {
+        set_end_label();
+    }
+    show_end_label(match_state->time_to_reinit);
+    match_state->time_to_reinit--;
+    if (match_state->time_to_reinit == 0) {
+        end_match(match_state);
+    }
 }
 
 void init_match_state (MatchState* match_state, uint8_t match_mode) {
@@ -215,6 +266,7 @@ void init_match_state (MatchState* match_state, uint8_t match_mode) {
     time(&current_clock_time);
     match_state->last_clock_time = 0;
 
+    match_state->is_match_ended = FALSE;
     match_state->paused = FALSE;
     match_state->previous_joypad = J_A;
 
@@ -229,7 +281,11 @@ void update_match_state (MatchState* match_state, uint8_t current_joypad) {
         match_state->paused = !match_state->paused;
     }
 
-    if (match_state->paused) {
+    if (match_state->is_match_ended) {
+        handle_match_end(match_state);
+    }
+
+    if (match_state->paused || match_state->is_match_ended) {
         match_state->previous_joypad = current_joypad;
         return;
     }
@@ -240,18 +296,8 @@ void update_match_state (MatchState* match_state, uint8_t current_joypad) {
 
     if (match_state->match_started) {
         roll_the_ball(&match_state->ball);
-        if (match_state->ball.goal_scored) {
-            if (match_state->time_to_reinit == 255) {
-                set_score_sprite_data(match_state->player.goals, 0);
-                set_goal_label();
-            }
-            show_goal_label(match_state->time_to_reinit);
-            match_state->time_to_reinit--;
-            if (match_state->time_to_reinit == 0) {
-                hide_label();
-                reinit_match(match_state);
-                match_state->match_started = FALSE;
-            }
+        if (match_state->ball.goal_scored && !match_state->is_match_ended) {
+            handle_goal_scored(match_state);
         } else {
             handle_match_time(match_state);
             update_player_movement(&match_state->player, current_joypad, match_state->previous_joypad);

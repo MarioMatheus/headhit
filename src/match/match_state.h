@@ -18,6 +18,7 @@ typedef struct {
     time_t time;
     time_t last_clock_time;
 
+    bool is_match_ended;
     bool paused;
     uint8_t previous_joypad;
 
