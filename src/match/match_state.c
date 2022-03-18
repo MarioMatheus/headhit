@@ -146,9 +146,21 @@ void set_goal_label (void) {
     }
 }
 
+void set_end_label (void) {
+    for (uint8_t i = 0; i < 3; i++) {
+        set_sprite_tile(LABEL_SPRITE_START_INDEX + i, END_LABEL_SPRITE_TITESET_START_INDEX + i);
+    }
+}
+
 void show_goal_label (uint8_t time) {
     for (uint8_t i = 0; i < 4; i++) {
-        move_sprite(LABEL_SPRITE_START_INDEX + i, 72 + 8 * i, 88 + (time % 12 == i));
+        move_sprite(LABEL_SPRITE_START_INDEX + i, 72 + 8 * i, 88 - (time % 24 == i));
+    }
+}
+
+void show_end_label (uint8_t time) {
+    for (uint8_t i = 0; i < 3; i++) {
+        move_sprite(LABEL_SPRITE_START_INDEX + i, 76 + 8 * i, 88 - (time % 42 == i));
     }
 }
 
