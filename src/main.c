@@ -19,9 +19,7 @@ void main () {
     disable_sound();
 
     MenuState menu_state;
-    // init_menu_state(&menu_state);
-    menu_state.is_match_ready = TRUE;
-    menu_state.match_mode = 0;
+    init_menu_state(&menu_state);
 
     bool match_initialized = FALSE;
     MatchState match_state;
@@ -29,17 +27,21 @@ void main () {
     while (1) {
         uint8_t current_joypad = joypad();
 
-        // if (!menu_state.is_match_ready) {
-        //     update_menu_state(&menu_state, current_joypad);
-        // }
+        if (!menu_state.is_match_ready) {
+            update_menu_state(&menu_state, current_joypad);
+        }
 
         if (menu_state.is_match_ready && !match_initialized) {
             init_match_state(&match_state, menu_state.match_mode);
-            match_initialized = 1;
+            match_initialized = TRUE;
         }
 
         if (menu_state.is_match_ready) {
             update_match_state(&match_state, current_joypad);
+            if (match_state.game_over) {
+                match_initialized = FALSE;
+                init_menu_state(&menu_state); // check selector
+            }
         }
 
         wait_vbl_done();

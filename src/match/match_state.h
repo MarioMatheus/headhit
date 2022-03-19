@@ -23,6 +23,7 @@ typedef struct {
     uint8_t previous_joypad;
 
     uint8_t time_to_reinit;
+    bool game_over;
 } MatchState;
 
 void init_match_state (MatchState* match_state, uint8_t match_mode);

@@ -201,7 +201,7 @@ void init_menu_state (MenuState* menu_state) {
     menu_state->chars[3] = 1;
 
     menu_state->previous_joypad = 0;
-    menu_state->is_match_ready = 0;
+    menu_state->is_match_ready = FALSE;
 
     set_option_selector_sprites_tiles();
     set_char_sprites(menu_state->chars);

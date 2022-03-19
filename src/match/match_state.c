@@ -114,7 +114,12 @@ void set_goalposts_sprites_data (void) {
             tile_index = tile_index + 1;
         }
     }
+}
 
+void unset_goalposts_sprites_data (void) {
+    for (uint8_t i = 0; i < 8; i++) {
+        set_sprite_prop(GOALPOST_2_SPRITE_START_INDEX + i, 0);
+    }
 }
 
 void show_goalposts (void) {
@@ -203,11 +208,6 @@ void reinit_match (MatchState* match_state) {
     match_state->ball.goal_scored = FALSE;
 }
 
-void end_match (MatchState* match_state) {
-    // TODO: return to menu
-    match_state->time = match_state->time;
-}
-
 void handle_goal_scored (MatchState* match_state) {
     if (match_state->time_to_reinit == 255) {
         set_score_sprite_data(match_state->player.goals, 0);
@@ -230,14 +230,22 @@ void handle_goal_scored (MatchState* match_state) {
     }
 }
 
-void handle_match_end (MatchState* match_state) {
+void handle_match_end (MatchState* match_state, uint8_t current_joypad) {
     if (match_state->time_to_reinit == 255) {
         set_end_label();
     }
     show_end_label(match_state->time_to_reinit);
     match_state->time_to_reinit--;
     if (match_state->time_to_reinit == 0) {
-        end_match(match_state);
+        match_state->time_to_reinit = 254;
+    }
+    if (current_joypad & 0xFFU && match_state->previous_joypad == 0x00U) {
+        hide_label();
+        hide_score();
+        hide_time();
+        hide_goalposts();
+        unset_goalposts_sprites_data();
+        match_state->game_over = TRUE;
     }
 }
 
@@ -271,6 +279,7 @@ void init_match_state (MatchState* match_state, uint8_t match_mode) {
     match_state->previous_joypad = J_A;
 
     match_state->time_to_reinit = 255;
+    match_state->game_over = FALSE;
 
     fill_bigcastle_stadium(match_state);
     set_stereo();
@@ -282,7 +291,7 @@ void update_match_state (MatchState* match_state, uint8_t current_joypad) {
     }
 
     if (match_state->is_match_ended) {
-        handle_match_end(match_state);
+        handle_match_end(match_state, current_joypad);
     }
 
     if (match_state->paused || match_state->is_match_ended) {
