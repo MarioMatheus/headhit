@@ -249,13 +249,21 @@ void handle_match_end (MatchState* match_state, uint8_t current_joypad) {
     }
 }
 
-void init_match_state (MatchState* match_state, uint8_t match_mode) {
+uint8_t get_home_char (uint8_t* match_chars) {
+    return match_chars[0] + (match_chars[1] << 0x02);
+}
+
+// uint8_t get_visitant_char (uint8_t* match_chars) {
+//     return match_chars[2] + (match_chars[3] << 2) & 0xF0;
+// }
+
+void init_match_state (MatchState* match_state, uint8_t match_mode, uint8_t* match_chars) {
     match_state->match_started = FALSE;
     match_state->match_mode = match_mode;
 
     Player player;
     match_state->player = player;
-    put_player_on_the_green_carpet(&match_state->player, 0x03, 0);
+    put_player_on_the_green_carpet(&match_state->player, get_home_char(match_chars), 0);
 
     Ball ball;
     ball.player = &match_state->player;

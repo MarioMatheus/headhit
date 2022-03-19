@@ -26,7 +26,9 @@ typedef struct {
     bool game_over;
 } MatchState;
 
-void init_match_state (MatchState* match_state, uint8_t match_mode);
+uint8_t get_home_char (uint8_t* match_chars);
+
+void init_match_state (MatchState* match_state, uint8_t match_mode, uint8_t* match_chars);
 void update_match_state (MatchState* menu_state, uint8_t current_joypad);
 
 #endif

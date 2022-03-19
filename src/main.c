@@ -1,5 +1,6 @@
 #include <gb/gb.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #include "vdata/background_tileset.h"
 #include "vdata/sprites_tileset.h"
@@ -32,7 +33,7 @@ void main () {
         }
 
         if (menu_state.is_match_ready && !match_initialized) {
-            init_match_state(&match_state, menu_state.match_mode);
+            init_match_state(&match_state, menu_state.match_mode, menu_state.chars);
             match_initialized = TRUE;
         }
 

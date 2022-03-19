@@ -11,7 +11,7 @@ int8_t kick_animation_y_offsets[] = {0, 0, 0, -1, 0, 0, 0, 0};
 void set_player_sprite_data (uint8_t char_sprite) {
     
     set_sprite_tile(PLAYER_SPRITE_INDEX + 1, PLAYER_SPRITE_TITESET_START_INDEX + (char_sprite & 0x03));
-    set_sprite_tile(PLAYER_SPRITE_INDEX, PLAYER_SPRITE_TITESET_START_INDEX + 4 + (char_sprite & 0x0C));
+    set_sprite_tile(PLAYER_SPRITE_INDEX, PLAYER_SPRITE_TITESET_START_INDEX + 4 + ((char_sprite & 0x0C) >> 2));
 
     if (char_sprite & 0xF0) {
         set_sprite_prop(PLAYER_SPRITE_INDEX + 1, S_FLIPX);
