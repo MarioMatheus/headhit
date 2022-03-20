@@ -1,7 +1,7 @@
 #include "bot.h"
 
 uint8_t dumb_bot(Player* self, Ball* ball) {
-    if (ball->x.h > self->x.h - 3 && ball->x.h < self->x.h + 4 && ball->y.h > self->y.h - 8) {
+    if (ball->x.h > self->x.h - 10 && ball->x.h + 8 < self->x.h + 4 && ball->y.h > self->y.h - 4) {
         return J_A;
     }
     if (
@@ -12,10 +12,10 @@ uint8_t dumb_bot(Player* self, Ball* ball) {
     ) {
         return J_B;
     }
-    if (ball->x.h < self->x.h) {
+    if (ball->x.h < self->x.h - 8) {
         return J_LEFT;
     }
-    if (ball->x.h > self->x.h) {
+    if (ball->x.h > self->x.h - 8) {
         return J_RIGHT;
     }
     return 0;
