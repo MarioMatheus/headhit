@@ -345,7 +345,10 @@ void roll_the_ball (Ball* ball) {
     }
 
     manage_kick_event_from_player(ball, ball->player);
+    manage_kick_event_from_player(ball, ball->opponent);
+
     apply_collision_ball_player(ball, ball->player);
+    apply_collision_ball_player(ball, ball->opponent);
 
     animate_sprite(ball);
     move_ball_sprite(ball);

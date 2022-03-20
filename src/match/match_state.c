@@ -271,6 +271,7 @@ void init_match_state (MatchState* match_state, uint8_t match_mode, uint8_t* mat
 
     Ball ball;
     ball.player = &match_state->player;
+    ball.opponent = &match_state->opponent;
     match_state->ball = ball;
     center_the_ball(&match_state->ball);
 
