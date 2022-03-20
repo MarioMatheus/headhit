@@ -193,10 +193,10 @@ void fill_bigcastle_stadium (MatchState* match_state) {
 
 bool check_if_match_ended_with_goals_scored (MatchState* match_state) {
     if (match_state->match_mode == MATCH_MODE_3_GOALS) {
-        return match_state->player.goals == 3;
+        return match_state->player.goals == 3 || match_state->opponent.goals == 3;
     }
     if (match_state->match_mode == MATCH_MODE_7_GOALS) {
-        return match_state->player.goals == 7;
+        return match_state->player.goals == 7 || match_state->opponent.goals == 7;
     }
     return FALSE;
 }
@@ -210,7 +210,7 @@ void reinit_match (MatchState* match_state) {
 
 void handle_goal_scored (MatchState* match_state) {
     if (match_state->time_to_reinit == 255) {
-        set_score_sprite_data(match_state->player.goals, 0);
+        set_score_sprite_data(match_state->player.goals, match_state->opponent.goals);
         if (match_state->player.goals == 10) {
             show_score();
         }

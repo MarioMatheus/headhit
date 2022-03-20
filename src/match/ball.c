@@ -263,6 +263,8 @@ void manage_ball_at_goalposts (Ball* ball) {
         ball->goal_scored = TRUE;
         if (ball->x.h > GOALPOST_2_SPRITE_X - 8) {
             add_score_to_player(ball->player);
+        } else {
+            add_score_to_player(ball->opponent);
         }
     }
 }
