@@ -8,16 +8,23 @@
 int8_t kick_animation_x_offsets[] = {-1, 0, 1, 1, 1, 0, -1, 0};
 int8_t kick_animation_y_offsets[] = {0, 0, 0, -1, 0, 0, 0, 0};
 
+uint8_t get_player_sprite_index (uint8_t char_sprite) {
+    if (char_sprite & 0xF0) {
+        return PLAYER_SPRITE_INDEX + 2;
+    }
+    return PLAYER_SPRITE_INDEX;
+}
+
 void set_player_sprite_data (uint8_t char_sprite) {
-    
-    set_sprite_tile(PLAYER_SPRITE_INDEX + 1, PLAYER_SPRITE_TITESET_START_INDEX + (char_sprite & 0x03));
-    set_sprite_tile(PLAYER_SPRITE_INDEX, PLAYER_SPRITE_TITESET_START_INDEX + 4 + ((char_sprite & 0x0C) >> 2));
+    uint8_t sprite_index = get_player_sprite_index(char_sprite);
+
+    set_sprite_tile(sprite_index + 1, PLAYER_SPRITE_TITESET_START_INDEX + (char_sprite & 0x03));
+    set_sprite_tile(sprite_index, PLAYER_SPRITE_TITESET_START_INDEX + 4 + ((char_sprite & 0x0C) >> 2));
 
     if (char_sprite & 0xF0) {
-        set_sprite_prop(PLAYER_SPRITE_INDEX + 1, S_FLIPX);
-        set_sprite_prop(PLAYER_SPRITE_INDEX, S_FLIPX);
+        set_sprite_prop(sprite_index + 1, S_FLIPX);
+        set_sprite_prop(sprite_index, S_FLIPX);
     }
-
 }
 
 void move_player_sprite (Player* player) {
@@ -26,6 +33,8 @@ void move_player_sprite (Player* player) {
 
     uint8_t x_offset = 0;
     uint8_t y_offset = 0;
+
+    uint8_t sprite_index = get_player_sprite_index(player->char_sprite);
 
     if (player->kick_animation > 0) {
         x_offset = kick_animation_x_offsets[player->kick_animation - 1];
@@ -44,13 +53,14 @@ void move_player_sprite (Player* player) {
         y_head++;
     }
 
-    move_sprite(PLAYER_SPRITE_INDEX + 1, x_head, y_head);
-    move_sprite(PLAYER_SPRITE_INDEX, player->x.b.h + x_offset, player->y.b.h + y_offset);
+    move_sprite(sprite_index + 1, x_head, y_head);
+    move_sprite(sprite_index, player->x.b.h + x_offset, player->y.b.h + y_offset);
 }
 
-void hide_player () {
-    hide_sprite(PLAYER_SPRITE_INDEX + 1);
-    hide_sprite(PLAYER_SPRITE_INDEX);
+void hide_player (Player* player) {
+    uint8_t sprite_index = get_player_sprite_index(player->char_sprite);
+    hide_sprite(sprite_index + 1);
+    hide_sprite(sprite_index);
 }
 
 void move_player_on_the_y_axis (Player* player) {
@@ -89,8 +99,11 @@ void add_score_to_player (Player* player) {
 void put_player_on_the_green_carpet (Player* player, uint8_t char_sprite, uint8_t goals) {
     player->char_sprite = char_sprite;
 
-    player->x.w = 56 << 8;
     player->y.w = PLAYER_SPRITE_MIN_Y << 8;
+    player->x.w = 56 << 8;
+    if (char_sprite & 0xF0) {
+        player->x.w *= 2;
+    }
 
     player->gravity = 15;
     player->x_speed = 200;

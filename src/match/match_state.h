@@ -14,6 +14,7 @@ typedef struct {
 
     Ball ball;
     Player player;
+    Player opponent;
 
     time_t time;
     time_t last_clock_time;

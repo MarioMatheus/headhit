@@ -253,9 +253,9 @@ uint8_t get_home_char (uint8_t* match_chars) {
     return match_chars[0] + (match_chars[1] << 0x02);
 }
 
-// uint8_t get_visitant_char (uint8_t* match_chars) {
-//     return match_chars[2] + (match_chars[3] << 2) & 0xF0;
-// }
+uint8_t get_visitant_char (uint8_t* match_chars) {
+    return match_chars[2] + (match_chars[3] << 2) + 0xF0;
+}
 
 void init_match_state (MatchState* match_state, uint8_t match_mode, uint8_t* match_chars) {
     match_state->match_started = FALSE;
@@ -264,6 +264,10 @@ void init_match_state (MatchState* match_state, uint8_t match_mode, uint8_t* mat
     Player player;
     match_state->player = player;
     put_player_on_the_green_carpet(&match_state->player, get_home_char(match_chars), 0);
+
+    Player opponent;
+    match_state->opponent = opponent;
+    put_player_on_the_green_carpet(&match_state->opponent, get_visitant_char(match_chars), 0);
 
     Ball ball;
     ball.player = &match_state->player;
@@ -318,6 +322,7 @@ void update_match_state (MatchState* match_state, uint8_t current_joypad) {
         } else {
             handle_match_time(match_state);
             update_player_movement(&match_state->player, current_joypad, match_state->previous_joypad);
+            // update_player_movement(&match_state->opponent, 0, 0);
         }
     }
 
