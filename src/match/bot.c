@@ -12,12 +12,22 @@ uint8_t dumb_bot(Player* self, Ball* ball) {
     ) {
         return J_B;
     }
-    if (ball->x.h < self->x.h - 8) {
+    
+    bool hovering_over_head = (
+        ball->x.h > self->x.h - 10
+        && ball->x.h + 8 < self->x.h + 4
+        && ball->y.h < self->y.h - 14
+        && ball->x_speed < 100
+    );
+
+    if (!hovering_over_head && ball->x.h < self->x.h - 8) {
         return J_LEFT;
     }
-    if (ball->x.h > self->x.h - 8) {
+
+    if (!hovering_over_head && ball->x.h > self->x.h - 8) {
         return J_RIGHT;
     }
+
     return 0;
 }
 
