@@ -32,7 +32,9 @@ typedef struct {
     uint8_t goals;
 } Player;
 
+void hide_player (Player* player);
 void add_score_to_player (Player* player);
+
 void put_player_on_the_green_carpet (Player* player, uint8_t char_sprite, uint8_t goals);
 void update_player_movement (Player* player, uint8_t current_joypad, uint8_t previous_joypad);
 

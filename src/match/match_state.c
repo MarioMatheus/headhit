@@ -203,6 +203,7 @@ bool check_if_match_ended_with_goals_scored (MatchState* match_state) {
 
 void reinit_match (MatchState* match_state) {
     put_player_on_the_green_carpet(&match_state->player, match_state->player.char_sprite, match_state->player.goals);
+    put_player_on_the_green_carpet(&match_state->opponent, match_state->opponent.char_sprite, match_state->opponent.goals);
     center_the_ball(&match_state->ball);
     match_state->time_to_reinit = 255;
     match_state->ball.goal_scored = FALSE;
@@ -245,6 +246,8 @@ void handle_match_end (MatchState* match_state, uint8_t current_joypad) {
         hide_time();
         hide_goalposts();
         unset_goalposts_sprites_data();
+        hide_player(&match_state->player);
+        hide_player(&match_state->opponent);
         match_state->game_over = TRUE;
     }
 }
@@ -294,6 +297,9 @@ void init_match_state (MatchState* match_state, uint8_t match_mode, uint8_t* mat
     match_state->time_to_reinit = 255;
     match_state->game_over = FALSE;
 
+    match_state->get_bot_thinking = get_bot_thinking();
+    match_state->bot_previous_joypad = J_A;
+
     fill_bigcastle_stadium(match_state);
     set_stereo();
 }
@@ -316,6 +322,7 @@ void update_match_state (MatchState* match_state, uint8_t current_joypad) {
         match_state->match_started = TRUE;
     }
 
+    uint8_t bot_movement = 0x00;
     if (match_state->match_started) {
         roll_the_ball(&match_state->ball);
         if (match_state->ball.goal_scored && !match_state->is_match_ended) {
@@ -323,9 +330,11 @@ void update_match_state (MatchState* match_state, uint8_t current_joypad) {
         } else {
             handle_match_time(match_state);
             update_player_movement(&match_state->player, current_joypad, match_state->previous_joypad);
-            // update_player_movement(&match_state->opponent, 0, 0);
+            bot_movement = (*match_state->get_bot_thinking)(&match_state->opponent, &match_state->ball);
+            update_player_movement(&match_state->opponent, bot_movement, match_state->bot_previous_joypad);
         }
     }
 
+    match_state->bot_previous_joypad = bot_movement;
     match_state->previous_joypad = current_joypad;
 }

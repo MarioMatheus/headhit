@@ -7,8 +7,10 @@
 
 #include "ball.h"
 #include "player.h"
+#include "bot.h"
 
 typedef struct {
+
     bool match_started;
     uint8_t match_mode;
 
@@ -25,6 +27,10 @@ typedef struct {
 
     uint8_t time_to_reinit;
     bool game_over;
+
+    BotThinking* get_bot_thinking;
+    uint8_t bot_previous_joypad;
+
 } MatchState;
 
 uint8_t get_home_char (uint8_t* match_chars);
