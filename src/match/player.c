@@ -37,7 +37,12 @@ void move_player_sprite (Player* player) {
     uint8_t sprite_index = get_player_sprite_index(player->char_sprite);
 
     if (player->kick_animation > 0) {
-        x_offset = kick_animation_x_offsets[player->kick_animation - 1];
+        uint8_t player_direction = 1;
+        if (player->char_sprite & 0xF0) {
+            player_direction = -1;
+        }
+        
+        x_offset = kick_animation_x_offsets[player->kick_animation - 1] * player_direction;
         y_offset = kick_animation_y_offsets[player->kick_animation - 1];
 
         if (player->relative_frame % 2 == 0) {
