@@ -148,9 +148,9 @@ void apply_head_trap (Ball* ball) {
 }
 
 void apply_goalpost_trap (Ball* ball) {
-    ball->energy_loss -= 5;
+    ball->energy_loss -= 6;
     decrease_energy_on_the_x_axis(ball);
-    ball->energy_loss += 5;
+    ball->energy_loss += 6;
 }
 
 /**
@@ -223,7 +223,14 @@ void apply_collision_ball_player (Ball* ball, Player* player) {
 }
 
 void manage_kick_event_from_player (Ball* ball, Player* player) {
-    if (player->j_a_tapped && ball->y.h > player->y.h - 6 && ball->y.h < player->y.h + 2) {
+    if (!player->j_a_tapped) {
+        return;
+    }
+    
+    bool is_head_hit = player->head_hit && ball->y.h > player->y.h - 14 && ball->y.h <= player->y.h - 6;
+    bool is_kick_hit = !player->head_hit && ball->y.h > player->y.h - 6 && ball->y.h < player->y.h + 2;
+    
+    if (is_head_hit || is_kick_hit) {
         int8_t kick_force = ball->x.h - player->x.h - 8;
 
         if (player->char_sprite & 0xF0) {
@@ -232,22 +239,28 @@ void manage_kick_event_from_player (Ball* ball, Player* player) {
 
         if (kick_force > -5 && kick_force < 2) {
             increase_ball_x_speed(ball, PLAYER_KICK_FORCE_X * (kick_force + 5));
-            increase_ball_y_speed(ball, PLAYER_KICK_FORCE_Y / (kick_force + 5));
+            if (is_kick_hit) {
+                increase_ball_y_speed(ball, PLAYER_KICK_FORCE_Y / (kick_force + 5));
+            } else {
+                increase_ball_y_speed(ball, PLAYER_KICK_FORCE_Y / ball->y.h - (player->y.h - 14));
+            }
             ball->is_to_right = !(player->char_sprite & 0xF0);
         }
     }
 }
 
 void manage_ball_at_goalposts (Ball* ball) {
-    if ((ball->x.h < GOALPOST_1_SPRITE_X + 8 || ball->x.h > GOALPOST_2_SPRITE_X - 8)
+    if (
+        !ball->goal_scored
+        && (ball->x.h < GOALPOST_1_SPRITE_X + 8 || ball->x.h > GOALPOST_2_SPRITE_X - 8)
         && ball->y.h > GOALPOST_SPRITE_Y - 12
         && ball->y.h < GOALPOST_SPRITE_Y + 2
     ) {
         ball->is_to_right = ball->x.h < GOALPOST_1_SPRITE_X + 8;
+        increase_ball_x_speed(ball, 20);
         if (ball->is_falling) {
             decrease_ball_y_speed(ball, ball->gravity);
             ball->is_falling = FALSE;
-            increase_ball_x_speed(ball, 20);
         }
     }
 

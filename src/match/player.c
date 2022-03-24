@@ -6,6 +6,9 @@
 int8_t kick_animation_x_offsets[] = {-1, 0, 1, 1, 1, 0, -1, 0};
 int8_t kick_animation_y_offsets[] = {0, 0, 0, -1, 0, 0, 0, 0};
 
+int8_t headhit_animation_x_offsets[] = {-1, 0, 1, 2, 1, 0, -1, 0};
+int8_t headhit_animation_y_offsets[] = {1, 0, 1, 1, 1, 0, 1, 0};
+
 uint8_t get_player_sprite_index (uint8_t char_sprite) {
     if (char_sprite & 0xF0) {
         return PLAYER_SPRITE_INDEX + 2;
@@ -29,33 +32,42 @@ void move_player_sprite (Player* player) {
     uint8_t x_head = player->x.b.h;
     uint8_t y_head = player->y.b.h - 8;
 
+    int8_t x_head_offset = 0;
+    int8_t y_head_offset = 0;
     int8_t x_offset = 0;
     int8_t y_offset = 0;
 
     uint8_t sprite_index = get_player_sprite_index(player->char_sprite);
 
     if (player->kick_animation > 0) {
-        x_offset = kick_animation_x_offsets[player->kick_animation - 1];
-        y_offset = kick_animation_y_offsets[player->kick_animation - 1];
+        if (player->head_hit) {
+            x_head_offset = headhit_animation_x_offsets[player->kick_animation - 1];
+            y_head_offset = headhit_animation_y_offsets[player->kick_animation - 1];
+        } else {
+            x_offset = kick_animation_x_offsets[player->kick_animation - 1];
+            y_offset = kick_animation_y_offsets[player->kick_animation - 1];
+        }
         
         if (player->char_sprite & 0xF0) {
             x_offset *= -1;
+            x_head_offset *= -1;
         }
 
         if (player->relative_frame % 2 == 0) {
             player->kick_animation++;
             if (player->kick_animation > 8) {
                 player->kick_animation = 0;
+                player->head_hit = FALSE;
             }
         }
     }
 
-    if (player->movement != 0) {
+    if (!player->head_hit && player->movement != 0) {
         x_head += player->movement;
         y_head++;
     }
 
-    move_sprite(sprite_index + 1, x_head, y_head);
+    move_sprite(sprite_index + 1, x_head + x_head_offset, y_head + y_head_offset);
     move_sprite(sprite_index, player->x.b.h + x_offset, player->y.b.h + y_offset);
 }
 
@@ -121,6 +133,7 @@ void put_player_on_the_green_carpet (Player* player, uint8_t char_sprite, uint8_
     player->j_a_tapped = FALSE;
     player->kick_cooldown = 0;
     player->kick_animation = 0;
+    player->head_hit = FALSE;
 
     player->in_collision_with_ball = FALSE;
 
@@ -150,6 +163,7 @@ void update_player_movement (Player* player, uint8_t current_joypad, uint8_t pre
 
     if (player->kick_cooldown == 0 && current_joypad & J_A && !(previous_joypad & J_A)) {
         player->j_a_tapped = TRUE;
+        player->head_hit = player->y_speed > 0;
         player->kick_cooldown = 30;
         player->kick_animation = 1;
     }

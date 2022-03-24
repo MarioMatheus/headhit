@@ -24,6 +24,7 @@ typedef struct {
     bool j_a_tapped;
     uint8_t kick_cooldown;
     uint8_t kick_animation;
+    bool head_hit;
 
     bool in_collision_with_ball;
 

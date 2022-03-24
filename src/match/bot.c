@@ -1,9 +1,17 @@
 #include "bot.h"
 
 uint8_t dumb_bot(Player* self, Ball* ball) {
-    if (ball->x.h > self->x.h - 10 && ball->x.h + 8 < self->x.h + 4 && ball->y.h > self->y.h - 4) {
+    if (
+        ball->x.h > self->x.h - 10
+        && ball->x.h + 8 < self->x.h + 4
+        && (
+            self->y_speed == 0 && ball->y.h > self->y.h - 4
+            || self->y_speed > 0 && ball->y.h > self->y.h - 14 && ball->y.h < self->y.h - 6
+        )
+    ) {
         return J_A;
     }
+
     if (
         ball->x.h > self->x.h - 3
         && ball->x.h < self->x.h + 8
@@ -14,7 +22,7 @@ uint8_t dumb_bot(Player* self, Ball* ball) {
     }
     
     bool hovering_over_head = (
-        ball->x.h > self->x.h - 10
+        ball->x.h > self->x.h - 14
         && ball->x.h + 8 < self->x.h + 4
         && ball->y.h < self->y.h - 14
         && ball->x_speed < 100
