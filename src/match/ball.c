@@ -239,16 +239,16 @@ void manage_kick_event_from_player (Ball* ball, Player* player) {
 }
 
 void manage_ball_at_goalposts (Ball* ball) {
-    if (
-        ball->is_falling
-        && (ball->x.h < GOALPOST_1_SPRITE_X + 8 || ball->x.h > GOALPOST_2_SPRITE_X - 8)
+    if ((ball->x.h < GOALPOST_1_SPRITE_X + 8 || ball->x.h > GOALPOST_2_SPRITE_X - 8)
         && ball->y.h > GOALPOST_SPRITE_Y - 12
         && ball->y.h < GOALPOST_SPRITE_Y + 2
     ) {
-        decrease_ball_y_speed(ball, ball->gravity);
         ball->is_to_right = ball->x.h < GOALPOST_1_SPRITE_X + 8;
-        ball->is_falling = FALSE;
-        increase_ball_x_speed(ball, 20);
+        if (ball->is_falling) {
+            decrease_ball_y_speed(ball, ball->gravity);
+            ball->is_falling = FALSE;
+            increase_ball_x_speed(ball, 20);
+        }
     }
 
     if (
