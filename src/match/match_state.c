@@ -1,7 +1,5 @@
 #include "match_state.h"
 
-#include <stdio.h>
-
 #include "../vdata/game_match_tilemap.h"
 
 #include "../lib/sound.h"
@@ -216,7 +214,6 @@ void handle_goal_scored (MatchState* match_state) {
             show_score();
         }
         set_goal_label();
-        play_goal_sound();
     }
     show_goal_label(match_state->time_to_reinit);
     match_state->time_to_reinit--;

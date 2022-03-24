@@ -1,5 +1,4 @@
 #include "menu_state.h"
-#include <stdio.h>
 
 #include "../vdata/main_menu_tilemap.h"
 #include "../vdata/match_menu_tilemap.h"

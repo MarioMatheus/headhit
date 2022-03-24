@@ -1,6 +1,5 @@
 #include <gb/gb.h>
 #include <stdbool.h>
-#include <stdio.h>
 
 #include "vdata/background_tileset.h"
 #include "vdata/sprites_tileset.h"

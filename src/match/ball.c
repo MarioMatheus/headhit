@@ -5,8 +5,6 @@
 #include "../lib/definitions.h"
 #include "../lib/sound.h"
 
-#include <stdio.h>
-
 
 void increase_ball_y_speed (Ball* ball, uint16_t speed) {
     ball->y_speed += speed;

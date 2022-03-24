@@ -3,8 +3,6 @@
 #include "../lib/definitions.h"
 #include "../lib/sound.h"
 
-#include <stdio.h>
-
 int8_t kick_animation_x_offsets[] = {-1, 0, 1, 1, 1, 0, -1, 0};
 int8_t kick_animation_y_offsets[] = {0, 0, 0, -1, 0, 0, 0, 0};
 
