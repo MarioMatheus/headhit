@@ -154,14 +154,15 @@ void show_char_sprites (void) {
 }
 
 void set_match_mode_sprites (uint8_t match_mode) {
-    uint8_t number = 3;
+    uint8_t number = 1;
     uint8_t description = MATCH_MODE_DESCRIPTION_MIN_TILESET_START;
 
-    if (match_mode == MATCH_MODE_5_MIN) {
-        number = 5;
+    if (match_mode == MATCH_MODE_3_MIN) {
+        number = 3;
     }
 
     if (match_mode == MATCH_MODE_3_GOALS) {
+        number = 3;
         description = MATCH_MODE_DESCRIPTION_GOALS_TILESET_START;
     }
 
@@ -193,7 +194,7 @@ void init_menu_state (MenuState* menu_state) {
     menu_state->previous_menu_index = MATCH_MENU_INDEX;
     menu_state->option_index = MATCH_MAIN_OPTION_INDEX;
 
-    menu_state->match_mode = MATCH_MODE_3_MIN;
+    menu_state->match_mode = MATCH_MODE_1_MIN;
     menu_state->chars[0] = 0;
     menu_state->chars[1] = 0;
     menu_state->chars[2] = 1;

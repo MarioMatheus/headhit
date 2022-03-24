@@ -279,11 +279,11 @@ void init_match_state (MatchState* match_state, uint8_t match_mode, uint8_t* mat
     center_the_ball(&match_state->ball);
 
     match_state->time = 540;
+    if (match_mode == MATCH_MODE_1_MIN) {
+        match_state->time = 60;
+    }
     if (match_mode == MATCH_MODE_3_MIN) {
         match_state->time = 180;
-    }
-    if (match_mode == MATCH_MODE_5_MIN) {
-        match_state->time = 300;
     }
 
     time_t current_clock_time;
