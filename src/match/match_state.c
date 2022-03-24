@@ -216,6 +216,7 @@ void handle_goal_scored (MatchState* match_state) {
             show_score();
         }
         set_goal_label();
+        play_goal_sound();
     }
     show_goal_label(match_state->time_to_reinit);
     match_state->time_to_reinit--;
@@ -233,6 +234,8 @@ void handle_goal_scored (MatchState* match_state) {
 
 void handle_match_end (MatchState* match_state, uint8_t current_joypad) {
     if (match_state->time_to_reinit == 255) {
+        set_mono();
+        play_game_over_sound();
         set_end_label();
     }
     show_end_label(match_state->time_to_reinit);
