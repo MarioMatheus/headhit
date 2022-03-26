@@ -24,6 +24,10 @@ Beat your opponent by scoring a certain number of goals or in timed matches.
 - Kick/Head the ball by pressing `A` button
 - Pause the match by pressing `Start` button
 
+## Contribution
+
+Go to [issues page](https://github.com/MarioMatheus/headhit/issues) to check game issues and look for something to comment, suggest or idk. </br>
+You can fork this project too and open a PR to enhance the game.
 
 ## Development
 
