@@ -13,6 +13,7 @@ typedef struct {
 
     uint8_t match_mode;
     uint8_t chars[4];
+    uint8_t player_side;
 
     uint8_t previous_joypad;
     bool is_match_ready;

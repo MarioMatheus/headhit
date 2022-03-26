@@ -260,17 +260,25 @@ uint8_t get_visitant_char (uint8_t* match_chars) {
     return match_chars[2] + (match_chars[3] << 2) + 0xF0;
 }
 
-void init_match_state (MatchState* match_state, uint8_t match_mode, uint8_t* match_chars) {
+void init_match_state (MatchState* match_state, uint8_t match_mode, uint8_t* match_chars, uint8_t player_side) {
     match_state->match_started = FALSE;
     match_state->match_mode = match_mode;
 
+    uint8_t player_char = get_home_char(match_chars);
+    uint8_t opponent_char = get_visitant_char(match_chars);
+    if (player_side == PLAYER_SIDE_RIGHT) {
+        uint8_t tmp = player_char;
+        player_char = opponent_char;
+        opponent_char = tmp;
+    }
+
     Player player;
     match_state->player = player;
-    put_player_on_the_green_carpet(&match_state->player, get_home_char(match_chars), 0);
+    put_player_on_the_green_carpet(&match_state->player, player_char, 0);
 
     Player opponent;
     match_state->opponent = opponent;
-    put_player_on_the_green_carpet(&match_state->opponent, get_visitant_char(match_chars), 0);
+    put_player_on_the_green_carpet(&match_state->opponent, opponent_char, 0);
 
     Ball ball;
     ball.player = &match_state->player;

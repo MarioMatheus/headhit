@@ -188,6 +188,22 @@ void hide_match_mode_sprites () {
     hide_sprite(NUMBER_SPRITE_TILES_START_INDEX + 2);
 }
 
+void set_player_side_sprite () {
+    set_sprite_tile(PLAYER_SIDE_SPRITE_INDEX, PLAYER_SIDE_SPRITE_TILESET_INDEX);
+}
+
+void hide_player_side_sprite () {
+    hide_sprite(PLAYER_SIDE_SPRITE_INDEX);
+}
+
+void move_player_side_sprite (uint8_t player_side) {
+    if (player_side == PLAYER_SIDE_LEFT) {
+        move_sprite(PLAYER_SIDE_SPRITE_INDEX, 44, 104);
+    } else {
+        move_sprite(PLAYER_SIDE_SPRITE_INDEX, 124, 104);
+    }
+}
+
 void init_menu_state (MenuState* menu_state) {
     menu_state->menu_index = MAIN_MENU_INDEX;
     menu_state->next_menu_index = MAIN_MENU_INDEX;
@@ -199,6 +215,7 @@ void init_menu_state (MenuState* menu_state) {
     menu_state->chars[1] = 0;
     menu_state->chars[2] = 1;
     menu_state->chars[3] = 1;
+    menu_state->player_side = PLAYER_SIDE_LEFT;
 
     menu_state->previous_joypad = 0;
     menu_state->is_match_ready = FALSE;
@@ -206,6 +223,7 @@ void init_menu_state (MenuState* menu_state) {
     set_option_selector_sprites_tiles();
     set_char_sprites(menu_state->chars);
     set_match_mode_sprites(menu_state->match_mode);
+    set_player_side_sprite();
     set_mono();
 }
 
@@ -216,6 +234,7 @@ void update_main_menu_state (MenuState* menu_state, uint8_t current_joypad) {
         move_option_selector(MATCH_MAIN_OPTION_X, MATCH_MAIN_OPTION_Y, MATCH_MAIN_OPTION_H);
         hide_char_sprites();
         hide_match_mode_sprites();
+        hide_player_side_sprite();
     }
     if (current_joypad & J_A && !(menu_state->previous_joypad & J_A)) {
         menu_state->next_menu_index = MATCH_MENU_INDEX;
@@ -229,6 +248,7 @@ void update_match_menu_state (MenuState* menu_state, uint8_t current_joypad) {
         move_option_selector(CHAR_1_OPTION_X, CHAR_1_OPTION_Y, CHAR_1_OPTION_H);
         show_char_sprites();
         show_match_mode_sprites();
+        move_player_side_sprite(menu_state->player_side);
     }
 
     if (current_joypad & J_B && !(menu_state->previous_joypad & J_B)) {
@@ -248,9 +268,16 @@ void update_match_menu_state (MenuState* menu_state, uint8_t current_joypad) {
         if (menu_state->option_index == PLAY_OPTION_INDEX) {
             hide_char_sprites();
             hide_match_mode_sprites();
+            hide_player_side_sprite();
             move_option_selector(0, 0, 0);
             menu_state->is_match_ready = 1;
         }
+
+        if (menu_state->option_index == CHAR_1_OPTION_INDEX || menu_state->option_index == CHAR_2_OPTION_INDEX) {
+            menu_state->player_side = menu_state->option_index == CHAR_2_OPTION_INDEX;
+            move_player_side_sprite(menu_state->player_side);
+        }
+
         play_click_sound();
     }
 

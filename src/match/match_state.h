@@ -35,7 +35,7 @@ typedef struct {
 
 uint8_t get_home_char (uint8_t* match_chars);
 
-void init_match_state (MatchState* match_state, uint8_t match_mode, uint8_t* match_chars);
+void init_match_state (MatchState* match_state, uint8_t match_mode, uint8_t* match_chars, uint8_t player_side);
 void update_match_state (MatchState* menu_state, uint8_t current_joypad);
 
 #endif

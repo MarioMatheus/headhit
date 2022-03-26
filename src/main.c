@@ -32,7 +32,7 @@ void main () {
         }
 
         if (menu_state.is_match_ready && !match_initialized) {
-            init_match_state(&match_state, menu_state.match_mode, menu_state.chars);
+            init_match_state(&match_state, menu_state.match_mode, menu_state.chars, menu_state.player_side);
             match_initialized = TRUE;
         }
 

@@ -1,9 +1,18 @@
 #include "bot.h"
 
-uint8_t dumb_bot(Player* self, Ball* ball) {
+int8_t sign (int8_t x) {
+    return (x > 0) - (x < 0);
+}
+
+uint8_t dumb_bot (Player* self, Ball* ball) {
+    int8_t side_factor = 1;
+    if (self->char_sprite & 0xF0) {
+        side_factor = -1;
+    }
+
     if (
-        ball->x.h > self->x.h - 10
-        && ball->x.h + 8 < self->x.h + 4
+        sign(ball->x.h - self->x.h - 10 * side_factor) == side_factor * -1
+        && sign(ball->x.h - self->x.h - 4 * side_factor) == side_factor
         && (
             self->y_speed == 0 && ball->y.h > self->y.h - 4
             || self->y_speed > 0 && ball->y.h > self->y.h - 14 && ball->y.h < self->y.h - 6
@@ -13,8 +22,8 @@ uint8_t dumb_bot(Player* self, Ball* ball) {
     }
 
     if (
-        ball->x.h > self->x.h - 3
-        && ball->x.h < self->x.h + 8
+        sign(ball->x.h - self->x.h - 3 * side_factor) == side_factor * -1
+        && sign(ball->x.h - self->x.h + 8 * side_factor) == side_factor
         && ball->y.h > self->y.h - 22
         && ball->y.h < self->y.h - 16
     ) {
@@ -22,17 +31,17 @@ uint8_t dumb_bot(Player* self, Ball* ball) {
     }
     
     bool hovering_over_head = (
-        ball->x.h > self->x.h - 14
-        && ball->x.h + 8 < self->x.h + 4
+        sign(ball->x.h - self->x.h - 14 * side_factor) == side_factor * -1
+        && sign(ball->x.h - self->x.h - 4 * side_factor) == side_factor
         && ball->y.h < self->y.h - 14
         && ball->x_speed < 100
     );
 
-    if (!hovering_over_head && ball->x.h < self->x.h - 8) {
+    if (!hovering_over_head && ball->x.h < self->x.h + side_factor * 8) {
         return J_LEFT;
     }
 
-    if (!hovering_over_head && ball->x.h > self->x.h - 8) {
+    if (!hovering_over_head && ball->x.h > self->x.h + side_factor * 8) {
         return J_RIGHT;
     }
 
