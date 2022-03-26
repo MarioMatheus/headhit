@@ -1,6 +1,6 @@
 /*
 
- MENU_TILESET.H
+ BACKGROUND_TILESET.H
 
  Include File.
 
@@ -10,7 +10,7 @@
   Compression          : None.
   Counter              : None.
   Tile size            : 8 x 8
-  Tiles                : 0 to 95
+  Tiles                : 0 to 115
 
   Palette colors       : None.
   SGB Palette          : None.
@@ -24,8 +24,8 @@
 
 
 /* Bank of tiles. */
-#define MenuTilesetBank 0
+#define BackgroundTilesetBank 0
 /* Start of tile array. */
-extern unsigned char MenuTileset[];
+extern unsigned char BackgroundTileset[];
 
-/* End of MENU_TILESET.H */
+/* End of BACKGROUND_TILESET.H */
