@@ -46,3 +46,7 @@ Run:
 ```bash
 $ make rodar_jogo
 ```
+
+## License
+
+See more details in MIT [LICENSE.md](LICENSE)
