@@ -286,6 +286,10 @@ void init_match_state (MatchState* match_state, uint8_t match_mode, uint8_t* mat
     match_state->ball = ball;
     center_the_ball(&match_state->ball);
 
+    Bot bot;
+    match_state->bot = bot;
+    init_bot(&match_state->bot, &match_state->opponent);
+
     match_state->time = 540;
     if (match_mode == MATCH_MODE_1_MIN) {
         match_state->time = 60;
@@ -304,9 +308,6 @@ void init_match_state (MatchState* match_state, uint8_t match_mode, uint8_t* mat
 
     match_state->time_to_reinit = 255;
     match_state->game_over = FALSE;
-
-    match_state->get_bot_thinking = get_bot_thinking();
-    match_state->bot_previous_joypad = J_A;
 
     fill_bigcastle_stadium(match_state);
     set_stereo();
@@ -330,7 +331,6 @@ void update_match_state (MatchState* match_state, uint8_t current_joypad) {
         match_state->match_started = TRUE;
     }
 
-    uint8_t bot_movement = 0x00;
     if (match_state->match_started) {
         roll_the_ball(&match_state->ball);
         if (match_state->ball.goal_scored && !match_state->is_match_ended) {
@@ -338,11 +338,14 @@ void update_match_state (MatchState* match_state, uint8_t current_joypad) {
         } else {
             handle_match_time(match_state);
             update_player_movement(&match_state->player, current_joypad, match_state->previous_joypad);
-            bot_movement = (*match_state->get_bot_thinking)(&match_state->opponent, &match_state->ball);
-            update_player_movement(&match_state->opponent, bot_movement, match_state->bot_previous_joypad);
+            uint8_t previous_bot_joypad = match_state->bot.last_command;
+            update_player_movement(
+                &match_state->opponent,
+                get_bot_command(&match_state->bot, &match_state->ball),
+                previous_bot_joypad
+            );
         }
     }
 
-    match_state->bot_previous_joypad = bot_movement;
     match_state->previous_joypad = current_joypad;
 }

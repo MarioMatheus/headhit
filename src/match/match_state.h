@@ -17,6 +17,7 @@ typedef struct {
     Ball ball;
     Player player;
     Player opponent;
+    Bot bot;
 
     time_t time;
     time_t last_clock_time;
@@ -27,9 +28,6 @@ typedef struct {
 
     uint8_t time_to_reinit;
     bool game_over;
-
-    BotThinking* get_bot_thinking;
-    uint8_t bot_previous_joypad;
 
 } MatchState;
 

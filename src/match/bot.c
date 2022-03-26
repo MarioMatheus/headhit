@@ -48,6 +48,26 @@ uint8_t dumb_bot (Player* self, Ball* ball) {
     return 0;
 }
 
-BotThinking* get_bot_thinking() {
-    return dumb_bot;
+uint8_t get_bot_command (Bot* bot, Ball* ball) {
+    if (bot->finger_cooldown > 0) {
+        bot->finger_cooldown--;
+        return bot->last_command;
+    }
+
+    uint8_t command = dumb_bot(bot->player, ball);
+    bot->last_command = command;
+    bot->finger_cooldown = (((uint8_t) rand()) % bot->finger_force) + 1;
+
+    return command;
+}
+
+void init_bot (Bot* bot, Player* player) {
+    initrand(0x87);
+    initrand(randw());
+
+    bot->player = player;
+
+    bot->finger_force = (((uint8_t) rand()) % 3) + 1;
+    bot->finger_cooldown = bot->finger_force;
+    bot->last_command = 0x00;
 }
