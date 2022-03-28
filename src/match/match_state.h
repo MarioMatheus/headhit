@@ -27,7 +27,9 @@ typedef struct {
     uint8_t previous_joypad;
 
     uint8_t time_to_reinit;
-    bool game_over;
+    int8_t game_over;
+
+    uint8_t pause_frame;
 
 } MatchState;
 
