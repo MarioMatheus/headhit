@@ -23,7 +23,7 @@ void set_score_sprite_data (uint8_t home_score, uint8_t visitant_score) {
 
     if (v_score < 10) {
         set_sprite_tile(SCORE_GOAL_V_1_SPRITE_INDEX, v_score);
-        set_sprite_tile(SCORE_GOAL_V_2_SPRITE_INDEX, 0);
+        set_sprite_tile(SCORE_GOAL_V_2_SPRITE_INDEX, 10);
     } else {
         set_sprite_tile(SCORE_GOAL_V_1_SPRITE_INDEX, v_score / 10);
         set_sprite_tile(SCORE_GOAL_V_2_SPRITE_INDEX, v_score % 10);
@@ -41,7 +41,7 @@ void show_score (void) {
         move_sprite(SCORE_GOAL_H_2_SPRITE_INDEX, SCORE_GOAL_H_2_SPRITE_X, SCORE_GOAL_SPRITE_Y);
     }
 
-    if (get_sprite_tile(SCORE_GOAL_V_2_SPRITE_INDEX) != 0) {
+    if (get_sprite_tile(SCORE_GOAL_V_2_SPRITE_INDEX) < 10) {
         move_sprite(SCORE_GOAL_V_2_SPRITE_INDEX, SCORE_GOAL_V_2_SPRITE_X, SCORE_GOAL_SPRITE_Y);
     }
 }
@@ -210,7 +210,7 @@ void reinit_match (MatchState* match_state) {
 void handle_goal_scored (MatchState* match_state) {
     if (match_state->time_to_reinit == 255) {
         set_score_sprite_data(match_state->player.goals, match_state->opponent.goals);
-        if (match_state->player.goals == 10) {
+        if (match_state->player.goals == 10 || match_state->opponent.goals == 10) {
             show_score();
         }
         set_goal_label();
