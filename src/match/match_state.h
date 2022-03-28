@@ -29,6 +29,8 @@ typedef struct {
     uint8_t time_to_reinit;
     int8_t game_over;
 
+    uint8_t pause_frame;
+
 } MatchState;
 
 uint8_t get_home_char (uint8_t* match_chars);

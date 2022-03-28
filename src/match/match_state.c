@@ -253,6 +253,18 @@ void handle_match_end (MatchState* match_state, uint8_t current_joypad) {
     }
 }
 
+void blink_sprites (bool is_to_show) {
+    if (is_to_show) {
+        show_score();
+        show_time();
+        show_goalposts();
+    } else {
+        hide_score();
+        hide_time();
+        hide_goalposts();
+    }
+}
+
 uint8_t get_home_char (uint8_t* match_chars) {
     return match_chars[0] + (match_chars[1] << 0x02);
 }
@@ -310,13 +322,24 @@ void init_match_state (MatchState* match_state, uint8_t match_mode, uint8_t* mat
     match_state->time_to_reinit = 255;
     match_state->game_over = -1;
 
+    match_state->pause_frame = 59;
+
     fill_bigcastle_stadium(match_state);
     set_stereo();
 }
 
 void update_match_state (MatchState* match_state, uint8_t current_joypad) {
-    if (current_joypad & J_START && !(match_state->previous_joypad & J_START)) {
+    match_state->pause_frame++;
+    if (match_state->pause_frame > 59) {
+        match_state->pause_frame = 0;
+    }
+
+    if (!match_state->is_match_ended && current_joypad & J_START && !(match_state->previous_joypad & J_START)) {
         match_state->paused = !match_state->paused;
+        if (!match_state->paused) {
+            blink_sprites(TRUE);
+        }
+        match_state->pause_frame = 0;
     }
 
     if (match_state->is_match_ended) {
@@ -324,6 +347,9 @@ void update_match_state (MatchState* match_state, uint8_t current_joypad) {
     }
 
     if (match_state->paused || match_state->is_match_ended) {
+        if (match_state->paused && match_state->pause_frame % 30 == 0) {
+            blink_sprites(match_state->pause_frame == 30);
+        }
         match_state->previous_joypad = current_joypad;
         return;
     }
