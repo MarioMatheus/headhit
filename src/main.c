@@ -38,9 +38,9 @@ void main () {
 
         if (menu_state.is_match_ready) {
             update_match_state(&match_state, current_joypad);
-            if (match_state.game_over) {
+            if (match_state.game_over > 0) {
                 match_initialized = FALSE;
-                init_menu_state(&menu_state); // check selector
+                init_menu_state(&menu_state);
             }
         }
 

@@ -239,8 +239,9 @@ void handle_match_end (MatchState* match_state, uint8_t current_joypad) {
     match_state->time_to_reinit--;
     if (match_state->time_to_reinit == 0) {
         match_state->time_to_reinit = 254;
+        match_state->game_over = 0;
     }
-    if (current_joypad & 0xFFU && match_state->previous_joypad == 0x00U) {
+    if (match_state->game_over == 0 && current_joypad & 0xFFU && match_state->previous_joypad == 0x00U) {
         hide_label();
         hide_score();
         hide_time();
@@ -248,7 +249,7 @@ void handle_match_end (MatchState* match_state, uint8_t current_joypad) {
         unset_goalposts_sprites_data();
         hide_player(&match_state->player);
         hide_player(&match_state->opponent);
-        match_state->game_over = TRUE;
+        match_state->game_over = 1;
     }
 }
 
@@ -307,7 +308,7 @@ void init_match_state (MatchState* match_state, uint8_t match_mode, uint8_t* mat
     match_state->previous_joypad = J_A;
 
     match_state->time_to_reinit = 255;
-    match_state->game_over = FALSE;
+    match_state->game_over = -1;
 
     fill_bigcastle_stadium(match_state);
     set_stereo();
