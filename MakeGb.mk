@@ -1,34 +1,33 @@
-NOME_DO_JOGO=headhit
-ARQUIVO_GB=build/$(NOME_DO_JOGO).gb
+GAME_NAME=headhit
+GB_FILE=build/$(GAME_NAME).gb
 
-DIRETORIO_SOURCES=src
-DIRETORIO_OBJ=build
-MODULOS := vdata menu lib match
-DIRETORIOS_MODULOS := $(patsubst %, $(DIRETORIO_OBJ)/%, $(MODULOS))
+SOURCES_DIR=src
+OBJ_DIR=build
+MODULES := vdata menu lib match
+MODULES_DIR := $(patsubst %, $(OBJ_DIR)/%, $(MODULES))
 
-# ARQUIVOS_C=$(wildcard $(DIRETORIO_SOURCES)/*.c)
-ARQUIVOS_C=$(shell find $(DIRETORIO_SOURCES)/ -type f -name '*.c')
-ARQUIVOS_OBJ=$(patsubst $(DIRETORIO_SOURCES)/%.c, $(DIRETORIO_OBJ)/%.o, $(ARQUIVOS_C))
+C_FILES=$(shell find $(SOURCES_DIR)/ -type f -name '*.c')
+OBJ_FILES=$(patsubst $(SOURCES_DIR)/%.c, $(OBJ_DIR)/%.o, $(C_FILES))
 
-COMPILADOR=gbdk/bin/lcc
+CC=gbdk/bin/lcc
 
-FLAGS_DO_COMPILADOR=-Wa-l 				\
-					-Wl-m 				\
-					-Wf--debug 			\
-					-Wl-y 				\
-					-Wl-w 				\
-					-DUSE_SFR_FOR_REG
+FLAGS=	-Wa-l			\
+	-Wl-m 			\
+	-Wf--debug 		\
+	-Wl-y 			\
+	-Wl-w 			\
+	-DUSE_SFR_FOR_REG	\
 
-all: criar_diretorio_build $(ARQUIVO_GB)
+all: create_dir_build $(GB_FILE)
 
-$(ARQUIVO_GB): $(ARQUIVOS_OBJ)
-	$(COMPILADOR) $(FLAGS_DO_COMPILADOR) -o $(ARQUIVO_GB) $(ARQUIVOS_OBJ)
+$(GB_FILE): $(OBJ_FILES)
+	$(CC) $(FLAGS) -o $(GB_FILE) $(OBJ_FILES)
 
-$(DIRETORIO_OBJ)/%.o: $(DIRETORIO_SOURCES)/%.c
-	$(COMPILADOR) $(FLAGS_DO_COMPILADOR) -c -o $@ $<
+$(OBJ_DIR)/%.o: $(SOURCES_DIR)/%.c
+	$(CC) $(FLAGS) -c -o $@ $<
 
-criar_diretorio_build:
-	@ mkdir -p $(DIRETORIO_OBJ) $(DIRETORIOS_MODULOS)
+create_dir_build:
+	mkdir -p $(OBJ_DIR) $(MODULES_DIR)
 
 clean:
-	@ rm -rf $(DIRETORIO_OBJ)/*
+	rm -rf $(OBJ_DIR)/*
