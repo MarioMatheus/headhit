@@ -2,6 +2,7 @@
 build/
 .idea/
 gbdk/
+cpputest/
 
 # Prerequisites
 *.d
@@ -58,3 +59,8 @@ dkms.conf
 
 winehq.key
 .vscode
+
+# Coverage
+coverage/
+coverage.info
+main_tests

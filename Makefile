@@ -53,6 +53,27 @@ download_gbdk:
 	tar -xf gbdk-linux64.tar.gz
 	rm gbdk-linux64.tar.gz
 
+.PHONY: download_cpputest
+## Download CppUTest v3.8 directly from github inside folder and compile
+download_cpputest:
+	if [ -d /cpputest-3.8 ]; then rm -rf cpputest-3.8 ; fi
+	if [ -f /cpputest-3.8.tar.gz ]; then rm -rf cpputest-3.8.tar.gz; fi
+	wget https://github.com/cpputest/cpputest/releases/download/v3.8/cpputest-3.8.tar.gz
+	tar -xf cpputest-3.8.tar.gz
+	rm cpputest-3.8.tar.gz
+	mv cpputest-3.8 cpputest
+	cd cpputest; ./autogen.sh; ./configure; make all
+
+.PHONY: tests
+## Run unit tests
+tests:
+	make -f MakeTests.mk all
+
+.PHONY: coverage
+## Generate test coverage of project
+coverage:
+	make -f MakeTests.mk coverage
+
 .PHONY: play
 ## Compile .gb file and emulate in emulator sameboy
 play:
@@ -62,7 +83,10 @@ play:
 ## Call clean in all makefiles
 clean:
 	make -f MakeGb.mk clean
+	make -f MakeTests.mk clean
+	make -f MakeTests.mk coverage_clean
 
 .PHONY: all
 ## Call rule cgb
 all: cgb
+
