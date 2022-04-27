@@ -11,7 +11,7 @@ uint8_t dumb_bot (Player* self, Ball* ball) {
     }
 
     if (
-        sign(ball->x.h - self->x.h - 10 * side_factor) == side_factor * -1
+        sign(ball->x.h - self->x.h - 9 * side_factor) == side_factor * -1
         && sign(ball->x.h - self->x.h - 4 * side_factor) == side_factor
         && (
             self->y_speed == 0 && ball->y.h > self->y.h - 4

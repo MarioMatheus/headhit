@@ -147,10 +147,16 @@ void apply_head_trap (Ball* ball) {
     ball->energy_loss += 2;
 }
 
-void apply_goalpost_trap (Ball* ball) {
+void apply_goalpost_net_trap (Ball* ball) {
     ball->energy_loss -= 6;
     decrease_energy_on_the_x_axis(ball);
     ball->energy_loss += 6;
+}
+
+void apply_goalpost_trap (Ball* ball) {
+    ball->energy_loss += 1;
+    decrease_energy_on_the_x_axis(ball);
+    ball->energy_loss -= 1;
 }
 
 /**
@@ -260,6 +266,7 @@ void manage_ball_at_goalposts (Ball* ball) {
         increase_ball_x_speed(ball, 20);
         if (ball->is_falling) {
             decrease_ball_y_speed(ball, ball->gravity);
+            apply_goalpost_trap(ball);
             ball->is_falling = FALSE;
         }
     }
@@ -270,7 +277,7 @@ void manage_ball_at_goalposts (Ball* ball) {
         && ball->y.h > GOALPOST_SPRITE_Y + 2
     ) {
         decrease_ball_y_speed(ball, ball->gravity);
-        apply_goalpost_trap(ball);
+        apply_goalpost_net_trap(ball);
         ball->goal_scored = TRUE;
         if (ball->x.h > GOALPOST_2_SPRITE_X - 8) {
             add_score_to_player(ball->player);
